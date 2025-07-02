@@ -11,7 +11,7 @@ interface RemediesListProps {
 export function RemediesList({ remedies }: RemediesListProps) {
     return (
         <section>
-            <h2 className="text-3xl font-bold font-headline text-center mb-8">AI-Powered Suggestions</h2>
+            <h2 className="text-3xl font-bold font-headline text-center mb-8">এআই-চালিত পরামর্শ</h2>
             <Accordion type="single" collapsible className="w-full space-y-3">
             {remedies.map((remedy, index) => (
                 <AccordionItem value={`item-${index}`} key={index} className="bg-card border rounded-lg shadow-sm transition-shadow hover:shadow-md">

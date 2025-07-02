@@ -10,7 +10,7 @@ import { LoaderCircle } from 'lucide-react';
 
 const formSchema = z.object({
   symptoms: z.string().min(10, {
-    message: 'Please describe your symptoms in at least 10 characters.',
+    message: 'অনুগ্রহ করে আপনার লক্ষণগুলি কমপক্ষে ১০টি অক্ষরে বর্ণনা করুন।',
   }),
 });
 
@@ -37,10 +37,10 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
                 name="symptoms"
                 render={({ field }) => (
                 <FormItem>
-                    <FormLabel className="text-lg font-semibold text-foreground">Describe your symptoms</FormLabel>
+                    <FormLabel className="text-lg font-semibold text-foreground">আপনার লক্ষণ বর্ণনা করুন</FormLabel>
                     <FormControl>
                     <Textarea
-                        placeholder="e.g., 'I have a throbbing headache on the right side of my head, sensitive to light and sound...'"
+                        placeholder="এখানে রোগীর সমস্ত লক্ষণ বিস্তারিতভাবে লিখুন। যেমন: মাথার ডানদিকে ব্যথা, একা থাকতে ভয়, ঠাণ্ডা বাতাসে আরাম, মিষ্টি খেতে প্রবল ইচ্ছা ইত্যাদি..."
                         className="min-h-[120px] text-base bg-background"
                         {...field}
                     />
@@ -53,10 +53,10 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
                 {isLoading ? (
                 <>
                     <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                    Analyzing...
+                    বিশ্লেষণ করা হচ্ছে...
                 </>
                 ) : (
-                'Get Suggestions'
+                'সাজেশন পান'
                 )}
             </Button>
             </form>
