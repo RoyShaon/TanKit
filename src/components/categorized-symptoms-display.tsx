@@ -15,7 +15,7 @@ interface CategorizedSymptomsDisplayProps {
 export function CategorizedSymptomsDisplay({ symptoms }: CategorizedSymptomsDisplayProps) {
   return (
     <div className="mb-6 space-y-4 rounded-xl border border-gray-200/80 bg-gray-50/50 p-3 sm:p-4 shadow-inner">
-       <h3 className="text-base md:text-lg font-bold text-gray-700">AI দ্বারা শ্রেণীবদ্ধ লক্ষণসমূহ:</h3>
+       <h3 className="text-base md:text-lg font-bold text-gray-700">শ্রেণীবদ্ধ লক্ষণসমূহ</h3>
        <div className="space-y-3 text-sm">
             <div className="flex items-start gap-3">
                 <div className="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600">
