@@ -75,10 +75,10 @@ Your analysis process is critical and must be followed precisely:
     d. A detailed 'justification' in Bengali. If the remedy is from a knowledge base ('H' or 'B'), you MUST explain which of the user's symptoms correspond to specific descriptions in that Materia Medica.
     e. The 'source' of the remedy ('H', 'B', or 'AI').
 
-2.  After generating the full list, you MUST select THREE top suggestions for comparison:
-    a.  **Top Hahnemann Remedy:** From all the remedies with source 'H', identify the one with the absolute highest score. You MUST find at least one remedy from this source if possible. If no relevant remedy is found, leave this field null.
-    b.  **Top Boericke Remedy:** From all the remedies with source 'B', identify the one with the absolute highest score. You MUST find at least one remedy from this source if possible. If no relevant remedy is found, leave this field null.
-    c.  **Top AI Remedy:** From all the remedies with source 'AI', identify the one with the absolute highest score. It is MANDATORY to provide a suggestion from your own knowledge base ('AI'), even if its score is lower than some remedies from the Materia Medica. This is for comparison purposes. If you genuinely cannot find any AI-based remedy, only then can you leave this field null.
+2.  After generating the full list, you MUST select THREE top suggestions for comparison. It is MANDATORY to provide a top suggestion for each of the three sources, even if their scores are low. This is for comparison purposes.
+    a.  **Top Hahnemann Remedy:** From all the remedies with source 'H', identify the one with the absolute highest score. Place this in the 'topRemedyFromMateriaMedica' field. If you cannot find any relevant remedy from this source, you must still select the best possible match. Do not leave this field null.
+    b.  **Top Boericke Remedy:** From all the remedies with source 'B', identify the one with the absolute highest score. Place this in the 'topRemedyFromBoericke' field. If you cannot find any relevant remedy from this source, you must still select the best possible match. Do not leave this field null.
+    c.  **Top AI Remedy:** From all the remedies with source 'AI', identify the one with the absolute highest score. It is MANDATORY to provide a suggestion from your own knowledge base ('AI'). Place this in the 'topRemedyFromAI' field.
 
 3.  The main 'remedies' array should still contain all the suggestions you found, including the ones you selected as top suggestions.
 
