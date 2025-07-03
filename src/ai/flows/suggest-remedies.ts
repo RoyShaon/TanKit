@@ -10,8 +10,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import * as fs from 'fs/promises';
-import * as path from 'path';
 
 const SuggestRemediesInputSchema = z.object({
   symptoms: z
@@ -40,9 +38,9 @@ const SuggestRemediesOutputSchema = z.object({
   remedies: z
     .array(RemedySchema)
     .describe('A ranked list of potential homeopathic medicine suggestions, based on all available knowledge sources.'),
-  topRemedyFromMateriaMedica: z.optional(z.nullable(RemedySchema)).describe("The single highest-scoring remedy found in the provided 'Hahnemann's Materia Medica Pura' knowledge base."),
-  topRemedyFromBoericke: z.optional(z.nullable(RemedySchema)).describe("The single highest-scoring remedy found in the provided 'Boericke's Materia Medica' knowledge base."),
-  topRemedyFromKent: z.optional(z.nullable(RemedySchema)).describe("The single highest-scoring remedy found in the provided 'Kent's Materia Medica' knowledge base."),
+  topRemedyFromMateriaMedica: z.optional(z.nullable(RemedySchema)).describe("The single highest-scoring remedy found based on 'Hahnemann's Materia Medica Pura' knowledge base."),
+  topRemedyFromBoericke: z.optional(z.nullable(RemedySchema)).describe("The single highest-scoring remedy found based on 'Boericke's Materia Medica' knowledge base."),
+  topRemedyFromKent: z.optional(z.nullable(RemedySchema)).describe("The single highest-scoring remedy found based on 'Kent's Materia Medica' knowledge base."),
   topRemedyFromAI: z.optional(z.nullable(RemedySchema)).describe("The single highest-scoring remedy suggested from the AI's general homeopathic knowledge, not found in the provided Materia Medica sources."),
 });
 export type SuggestRemediesOutput = z.infer<typeof SuggestRemediesOutputSchema>;
@@ -53,12 +51,7 @@ export async function suggestRemedies(input: SuggestRemediesInput): Promise<Sugg
 
 const prompt = ai.definePrompt({
   name: 'suggestRemediesPrompt',
-  input: {schema: z.object({
-    symptoms: z.string(),
-    hahnemannMateriaMedica: z.string(),
-    boerickeMateriaMedica: z.string(),
-    kentMateriaMedica: z.string(),
-  })},
+  input: {schema: SuggestRemediesInputSchema},
   output: {schema: SuggestRemediesOutputSchema},
   prompt: `You are a highly experienced homeopathic doctor. You will analyze the patient's symptoms based on the core principles of classical homeopathy: 
 1.  **Totality of Symptoms:** Consider all symptoms together—mental, emotional, general, and particular. The goal is to treat the patient, not just the disease.
@@ -76,9 +69,9 @@ Your **first task** is to categorize the given symptoms into three sections: ম
 Your **second task** is to analyze the case as a whole and determine which knowledge source (Hahnemann's Materia Medica, Boericke's Materia Medica, Kent's Materia Medica, or your own general AI knowledge) appears most suited for finding the primary remedy for this specific patient. Provide a short justification for your choice in the 'bestRepertorySuggestion' field.
 
 Your **third task** is to perform a comprehensive analysis using your categorized symptoms and FOUR distinct sources of information:
-1.  The provided 'Knowledge Base 1 (Hahnemann's Materia Medica Pura)'. This is your PRIMARY source. Any remedy found here MUST have its 'source' field set to 'H'.
-2.  The provided 'Knowledge Base 2 (Boericke's Materia Medica)'. Any remedy found here MUST have its 'source' field set to 'B'.
-3.  The provided 'Knowledge Base 3 (Kent's Materia Medica)'. Any remedy found here MUST have its 'source' field set to 'K'.
+1.  Your knowledge of 'Hahnemann's Materia Medica Pura'. This is your PRIMARY source. Any remedy found here MUST have its 'source' field set to 'H'.
+2.  Your knowledge of 'Boericke's Materia Medica'. Any remedy found here MUST have its 'source' field set to 'B'.
+3.  Your knowledge of 'Kent's Materia Medica'. Any remedy found here MUST have its 'source' field set to 'K'.
 4.  Your own extensive, general homeopathic knowledge. Any remedy you suggest from this general knowledge that is NOT in the provided texts MUST have its 'source' field set to 'AI'.
 
 Your analysis process is critical:
@@ -100,15 +93,6 @@ Your analysis process is critical:
 
 All output (descriptions, justifications, categorized symptoms, and repertory suggestions) MUST be in Bengali, except for the medicine names, which must be in English.
 
-Knowledge Base 1 (Hahnemann's Materia Medica Pura):
-{{{hahnemannMateriaMedica}}}
-
-Knowledge Base 2 (Boericke's Materia Medica):
-{{{boerickeMateriaMedica}}}
-
-Knowledge Base 3 (Kent's Materia Medica):
-{{{kentMateriaMedica}}}
-
 Symptoms: {{{symptoms}}}`
 });
 
@@ -118,23 +102,8 @@ const suggestRemediesFlow = ai.defineFlow(
     inputSchema: SuggestRemediesInputSchema,
     outputSchema: SuggestRemediesOutputSchema,
   },
-  async input => {
-    const hahnemannPath = path.join(process.cwd(), 'src', 'data', 'materia-medica.txt');
-    const boerickePath = path.join(process.cwd(), 'src', 'data', 'Boerickes_Materia_Medica.txt');
-    const kentPath = path.join(process.cwd(), 'src', 'data', 'Kent\'s Lectures On Materia Medica.txt');
-    
-    const [hahnemannMateriaMedica, boerickeMateriaMedica, kentMateriaMedica] = await Promise.all([
-      fs.readFile(hahnemannPath, 'utf-8'),
-      fs.readFile(boerickePath, 'utf-8'),
-      fs.readFile(kentPath, 'utf-8')
-    ]);
-    
-    const {output} = await prompt({
-      ...input, 
-      hahnemannMateriaMedica, 
-      boerickeMateriaMedica,
-      kentMateriaMedica
-    });
+  async (input) => {
+    const {output} = await prompt(input);
     return output!;
   }
 );
