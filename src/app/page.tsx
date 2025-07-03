@@ -60,8 +60,11 @@ export default function Home() {
         </header>
 
         <main className="flex-1 grid lg:grid-cols-2 gap-8 items-start">
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 md:p-8 border border-gray-200">
+          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 md:p-8 border border-gray-200 flex flex-col gap-8">
             <SymptomForm onSubmit={handleSubmit} isLoading={isLoading} />
+            {categorizedSymptoms && !isLoading && !error && (
+              <CategorizedSymptomsDisplay symptoms={categorizedSymptoms} />
+            )}
           </section>
 
           <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 md:p-8 border border-gray-200 min-h-[500px]">
@@ -92,18 +95,14 @@ export default function Home() {
             </div>
             )}
             
-            {categorizedSymptoms && !isLoading && (
-              <CategorizedSymptomsDisplay symptoms={categorizedSymptoms} />
-            )}
-            
-            {(topRemedyFromMateriaMedica || topRemedyFromAI) && (
+            {!isLoading && !error && (topRemedyFromMateriaMedica || topRemedyFromAI) && (
               <TopSuggestions 
                 remedyFromMateriaMedica={topRemedyFromMateriaMedica} 
                 remedyFromAI={topRemedyFromAI} 
               />
             )}
 
-            {remedies && remedies.length > 0 && (
+            {remedies && remedies.length > 0 && !isLoading && !error && (
               <div className='mt-8'>
                 <RemediesList remedies={remedies} />
               </div>
