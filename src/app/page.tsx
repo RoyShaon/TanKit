@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Leaf, Bot, AlertTriangle, LoaderCircle } from 'lucide-react';
+import { Leaf, Bot, AlertTriangle, LoaderCircle, BookText, BrainCircuit } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { suggestRemedies, type SuggestRemediesOutput } from '@/ai/flows/suggest-remedies';
 import { SymptomForm } from '@/components/symptom-form';
 import { RemediesList } from '@/components/remedies-list';
-import { ConcreteSuggestion } from '@/components/concrete-suggestion';
+import { TopSuggestions } from '@/components/top-suggestions';
+
 
 interface SymptomFormValues {
     symptoms: string;
@@ -14,19 +15,27 @@ interface SymptomFormValues {
 
 export default function Home() {
   const [remedies, setRemedies] = useState<SuggestRemediesOutput['remedies'] | null>(null);
-  const [concreteSuggestion, setConcreteSuggestion] = useState<SuggestRemediesOutput['concreteSuggestion'] | null>(null);
+  const [topRemedyFromMateriaMedica, setTopRemedyFromMateriaMedica] = useState<SuggestRemediesOutput['topRemedyFromMateriaMedica'] | null>(null);
+  const [topRemedyFromAI, setTopRemedyFromAI] = useState<SuggestRemediesOutput['topRemedyFromAI'] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(values: SymptomFormValues) {
     setIsLoading(true);
     setRemedies(null);
-    setConcreteSuggestion(null);
+    setTopRemedyFromMateriaMedica(null);
+    setTopRemedyFromAI(null);
     setError(null);
     try {
       const result = await suggestRemedies({ symptoms: values.symptoms });
-      setRemedies(result.remedies.sort((a, b) => b.score - a.score));
-      setConcreteSuggestion(result.concreteSuggestion);
+      // Filter out the top suggestions from the main list to avoid duplication in the UI
+      const topIds = [result.topRemedyFromMateriaMedica?.name, result.topRemedyFromAI?.name].filter(Boolean);
+      const filteredRemedies = result.remedies.filter(r => !topIds.includes(r.name));
+      
+      setRemedies(filteredRemedies.sort((a, b) => b.score - a.score));
+      setTopRemedyFromMateriaMedica(result.topRemedyFromMateriaMedica);
+      setTopRemedyFromAI(result.topRemedyFromAI);
+
     } catch (e) {
       setError('সাজেশন আনতে একটি ত্রুটি ঘটেছে। অনুগ্রহ করে আপনার সংযোগ বা API কী পরীক্ষা করে আবার চেষ্টা করুন।');
       console.error(e);
@@ -83,15 +92,20 @@ export default function Home() {
             </div>
             )}
             
-            {concreteSuggestion && (
-              <ConcreteSuggestion suggestion={concreteSuggestion} />
+            {(topRemedyFromMateriaMedica || topRemedyFromAI) && (
+              <TopSuggestions 
+                remedyFromMateriaMedica={topRemedyFromMateriaMedica} 
+                remedyFromAI={topRemedyFromAI} 
+              />
             )}
 
             {remedies && remedies.length > 0 && (
-              <RemediesList remedies={remedies} />
+              <div className='mt-8'>
+                <RemediesList remedies={remedies} />
+              </div>
             )}
             
-            {remedies && remedies.length === 0 && !isLoading && !error && (
+            {remedies && remedies.length === 0 && !topRemedyFromAI && !topRemedyFromMateriaMedica && !isLoading && !error && (
                 <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
                   <Alert className="w-full">
                     <Bot className="h-4 w-4" />
@@ -109,7 +123,7 @@ export default function Home() {
       <footer className="py-6 mt-auto bg-transparent">
         <div className="container mx-auto px-4 max-w-7xl">
           <p className="text-sm text-center text-gray-500">
-            এই অ্যাপ্লিকেশনটি শুধুমাত্র তথ্যগত সহায়তার জন্য। যেকোনো ঔষধ গ্রহণের পূর্বে রেজিস্টার্ড চিকিৎসকের পরামর্শ নিন।
+          এই টুলটি শুধুমাত্র তথ্যের উদ্দেশ্যে তৈরি। চিকিৎসা সংক্রান্ত যেকোনো প্রয়োজনে সর্বদা একজন যোগ্য চিকিৎসকের পরামর্শ নিন।
           </p>
           <p className="text-sm text-center text-muted-foreground mt-2">
             ডেভেলপ করেছেন ROY SHAON | © {new Date().getFullYear()} সর্বসত্ত্ব সংরক্ষিত।
