@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FileText, LoaderCircle, Mic, Wand2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -102,15 +102,45 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
 
     recognitionRef.current = recognition;
 
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, [form]);
+
+  const startListening = useCallback(() => {
+    if (recognitionRef.current && !isListening) {
+      textBeforeListening.current = form.getValues('symptoms');
+      try {
+        recognitionRef.current.start();
+      } catch (e) {
+        if (e instanceof DOMException && e.name === 'InvalidStateError') {
+          // This error can happen in some browsers if start() is called again before the 'onstart' event has fired.
+          // We can safely ignore it.
+        } else {
+          console.error("Speech recognition start error:", e);
+        }
+      }
+    }
+  }, [isListening, form]);
+
+  const stopListening = useCallback(() => {
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
+    }
+  }, [isListening]);
+
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.code === 'Space' && !isListening) {
+      if (e.ctrlKey && e.code === 'Space' && !e.repeat) {
         e.preventDefault();
         startListening();
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.code === 'Space' && isListening) {
+      if (e.ctrlKey && e.code === 'Space') {
         e.preventDefault();
         stopListening();
       }
@@ -120,27 +150,10 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
     document.addEventListener('keyup', handleKeyUp);
 
     return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const startListening = () => {
-    if (recognitionRef.current && !isListening) {
-      textBeforeListening.current = form.getValues('symptoms');
-      recognitionRef.current.start();
-    }
-  };
-
-  const stopListening = () => {
-    if (recognitionRef.current && isListening) {
-      recognitionRef.current.stop();
-    }
-  };
+  }, [startListening, stopListening]);
 
   const handleRearrange = async () => {
     const currentSymptoms = form.getValues('symptoms');
