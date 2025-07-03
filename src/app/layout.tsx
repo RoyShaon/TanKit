@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'MediKit',
+  title: 'RoyKit',
   description: 'হোমিওপ্যাথিক প্রতিকারের জন্য আপনার এআই-চালিত সহকারী।',
 };
 
