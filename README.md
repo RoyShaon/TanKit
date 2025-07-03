@@ -1,4 +1,4 @@
-# Veridia - AI Homeopathic Assistant
+# TanKit - AI Homeopathic Assistant
 
 This is a Next.js application that provides homeopathic medicine suggestions based on user-inputted symptoms. It uses GenAI to analyze symptoms and suggest potential remedies.
 

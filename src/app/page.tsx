@@ -62,7 +62,7 @@ export default function Home() {
             <Leaf className="w-10 h-10" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold font-headline text-gray-800 tracking-tight mb-2">
-            RoyKit
+            TanKit
           </h1>
           <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto">
           রোগীর লক্ষণসমূহের বিস্তারিত বিবরণ দিন এবং হ্যানিম্যান ও বোরিকসের রেপার্টরি অনুসারে জেমিনি এআই-এর মাধ্যমে সম্ভাব্য প্রতিকারগুলো সম্পর্কে জানুন।
@@ -137,7 +137,7 @@ export default function Home() {
       <footer className="py-6 mt-auto bg-transparent">
         <div className="container mx-auto px-4 max-w-7xl">
           <p className="text-sm text-center text-muted-foreground mt-2">
-            ডেভেলপ করেছেন ROY SHAON | © {new Date().getFullYear()} সর্বসত্ত্ব সংরক্ষিত।
+            ডেভেলপ করেছেন TAN | © {new Date().getFullYear()} সর্বসত্ত্ব সংরক্ষিত।
           </p>
         </div>
       </footer>
