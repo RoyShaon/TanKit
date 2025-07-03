@@ -1,15 +1,12 @@
 "use client";
 
-import { type SuggestRemediesOutput } from "@/ai/flows/suggest-remedies";
 import { BookText, BrainCircuit, Star, GraduationCap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-type Remedy = NonNullable<SuggestRemediesOutput["topRemedyFromMateriaMedica"]>;
-
 interface TopSuggestionsProps {
-  remedyFromMateriaMedica: Remedy | null | undefined;
-  remedyFromBoericke: Remedy | null | undefined;
-  remedyFromAI: Remedy | null | undefined;
+  remedyFromMateriaMedica: RemedyType | null | undefined;
+  remedyFromBoericke: RemedyType | null | undefined;
+  remedyFromAI: RemedyType | null | undefined;
 }
 
 const ScoreCircle: React.FC<{ score: number }> = ({ score }) => {
@@ -59,7 +56,7 @@ const ScoreCircle: React.FC<{ score: number }> = ({ score }) => {
 };
 
 const SuggestionCard: React.FC<{
-  remedy: Remedy;
+  remedy: RemedyType;
   type: "materia-medica" | "boericke" | "ai";
 }> = ({ remedy, type }) => {
   const isMateriaMedica = type === "materia-medica";
