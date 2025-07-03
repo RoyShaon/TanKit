@@ -84,13 +84,16 @@ export default function Home() {
 
       <footer className="py-8 mt-auto bg-background/80 backdrop-blur-sm border-t">
         <div className="container mx-auto px-4 max-w-3xl">
-          <Alert variant="default" className="bg-card/50">
+          <Alert variant="default" className="bg-card/50 mb-4">
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-            <AlertTitle className="font-bold">দাবিত্যাগ</AlertTitle>
+            <AlertTitle className="font-bold">সতর্কবার্তা</AlertTitle>
             <AlertDescription className="text-muted-foreground">
-              এই টুলটি শুধুমাত্র তথ্যের উদ্দেশ্যে এবং এটি পেশাদার চিকিৎসা পরামর্শ, রোগ নির্ণয় বা চিকিৎসার বিকল্প নয়। যেকোনো மருத்துவ অবস্থা সম্পর্কিত প্রশ্নের জন্য সর্বদা আপনার চিকিৎসক বা অন্যান্য যোগ্য স্বাস্থ্য প্রদানকারীর পরামর্শ নিন।
+              এই টুলটি শুধুমাত্র তথ্যের উদ্দেশ্যে তৈরি। চিকিৎসা সংক্রান্ত যেকোনো প্রয়োজনে সর্বদা একজন যোগ্য চিকিৎসকের পরামর্শ নিন।
             </AlertDescription>
           </Alert>
+          <p className="text-sm text-center text-muted-foreground">
+            ডেভেলপ করেছেন ROY SHAON | © {new Date().getFullYear()} সর্বসত্ত্ব সংরক্ষিত।
+          </p>
         </div>
       </footer>
     </>
