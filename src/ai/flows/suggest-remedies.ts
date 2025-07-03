@@ -21,7 +21,7 @@ const SuggestRemediesInputSchema = z.object({
 export type SuggestRemediesInput = z.infer<typeof SuggestRemediesInputSchema>;
 
 const RemedySchema = z.object({
-  name: z.string().describe("The name of the suggested homeopathic medicine in Bengali, as found in the knowledge base."),
+  name: z.string().describe("The name of the suggested homeopathic medicine in English, as found in the knowledge base."),
   description: z.string().describe("A brief explanation in Bengali for why the remedy is suggested, based on the provided knowledge bases."),
   score: z.number().describe("A similarity score from 1 to 100, where 100 is a perfect match between the user's symptoms and the remedy's profile in the knowledge base."),
   justification: z.string().describe("A detailed justification in Bengali, quoting or referencing specific symptoms from the respective Materia Medica that match the user's symptoms. This explains the basis for the score."),
@@ -69,7 +69,7 @@ After categorizing the symptoms, your second task is to perform a comprehensive 
 Your analysis process is critical and must be followed precisely:
 
 1.  First, generate a combined, ranked list of potential remedies from all three sources. For each remedy, you must provide:
-    a. The medicine's name in Bengali.
+    a. The medicine's name in English.
     b. A brief description in Bengali.
     c. A confidence score from 1 to 100.
     d. A detailed 'justification' in Bengali. If the remedy is from a knowledge base ('H' or 'B'), you MUST explain which of the user's symptoms correspond to specific descriptions in that Materia Medica.
@@ -82,7 +82,7 @@ Your analysis process is critical and must be followed precisely:
 
 3.  The main 'remedies' array should still contain all the suggestions you found, including the ones you selected as top suggestions.
 
-All output MUST be in Bengali.
+All output (descriptions, justifications, categorized symptoms) MUST be in Bengali, except for the medicine names, which must be in English.
 
 Knowledge Base 1 (Hahnemann's Materia Medica Pura):
 {{{hahnemannMateriaMedica}}}
