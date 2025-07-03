@@ -1,1 +1,22 @@
-{"node":{"d2856cbb29769bce2c64af4f9f9ec00675e87d1f":{"workers":{"app/page":"32521"},"layer":{"app/page":"action-browser"}},"77b9123525d7fd4eaa3bc0e31746415c3e1ba975":{"workers":{"app/page":"32521"},"layer":{"app/page":"action-browser"}}},"edge":{},"encryptionKey":"5lc3oPsvAEG9a1woi72sS4zSI7yxw7RcihCZmRHwZw8="}
+{
+  "node": {
+    "d2856cbb29769bce2c64af4f9f9ec00675e87d1f": {
+      "workers": {
+        "app/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2Fhome%2Fuser%2Fstudio%2Fsrc%2Fai%2Fflows%2Fsuggest-remedies.ts%22%2C%5B%22suggestRemedies%22%5D%5D%2C%5B%22%2Fhome%2Fuser%2Fstudio%2Fsrc%2Fai%2Fflows%2Fpunctuate-text.ts%22%2C%5B%22punctuateText%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "77b9123525d7fd4eaa3bc0e31746415c3e1ba975": {
+      "workers": {
+        "app/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2Fhome%2Fuser%2Fstudio%2Fsrc%2Fai%2Fflows%2Fsuggest-remedies.ts%22%2C%5B%22suggestRemedies%22%5D%5D%2C%5B%22%2Fhome%2Fuser%2Fstudio%2Fsrc%2Fai%2Fflows%2Fpunctuate-text.ts%22%2C%5B%22punctuateText%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    }
+  },
+  "edge": {},
+  "encryptionKey": "WgfjeQ7Q9i/mgIsRJTkMt+nHmW54B08JP/c8fpl16ts="
+}

@@ -14,6 +14,7 @@ export default function Home() {
   const [remedies, setRemedies] = useState<SuggestRemediesOutput['remedies'] | null>(null);
   const [topRemedyFromMateriaMedica, setTopRemedyFromMateriaMedica] = useState<SuggestRemediesOutput['topRemedyFromMateriaMedica'] | null>(null);
   const [topRemedyFromBoericke, setTopRemedyFromBoericke] = useState<SuggestRemediesOutput['topRemedyFromBoericke'] | null>(null);
+  const [topRemedyFromKent, setTopRemedyFromKent] = useState<SuggestRemediesOutput['topRemedyFromKent'] | null>(null);
   const [topRemedyFromAI, setTopRemedyFromAI] = useState<SuggestRemediesOutput['topRemedyFromAI'] | null>(null);
   const [categorizedSymptoms, setCategorizedSymptoms] = useState<SuggestRemediesOutput['categorizedSymptoms'] | null>(null);
   const [bestRepertorySuggestion, setBestRepertorySuggestion] = useState<string | null>(null);
@@ -25,6 +26,7 @@ export default function Home() {
     setRemedies(null);
     setTopRemedyFromMateriaMedica(null);
     setTopRemedyFromBoericke(null);
+    setTopRemedyFromKent(null);
     setTopRemedyFromAI(null);
     setCategorizedSymptoms(null);
     setBestRepertorySuggestion(null);
@@ -36,6 +38,7 @@ export default function Home() {
       const topRemedyNames = [
         result.topRemedyFromMateriaMedica?.name,
         result.topRemedyFromBoericke?.name,
+        result.topRemedyFromKent?.name,
         result.topRemedyFromAI?.name,
       ].filter(Boolean);
 
@@ -46,6 +49,7 @@ export default function Home() {
       setRemedies(otherRemedies.sort((a, b) => b.score - a.score));
       setTopRemedyFromMateriaMedica(result.topRemedyFromMateriaMedica);
       setTopRemedyFromBoericke(result.topRemedyFromBoericke);
+      setTopRemedyFromKent(result.topRemedyFromKent);
       setTopRemedyFromAI(result.topRemedyFromAI);
       setCategorizedSymptoms(result.categorizedSymptoms);
       setBestRepertorySuggestion(result.bestRepertorySuggestion);
@@ -69,7 +73,7 @@ export default function Home() {
             TanKit
           </h1>
           <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto">
-          রোগীর লক্ষণসমূহের বিস্তারিত বিবরণ দিন এবং হ্যানিম্যান ও বোরিকসের রেপার্টরি অনুসারে জেমিনি এআই-এর মাধ্যমে সম্ভাব্য প্রতিকারগুলো সম্পর্কে জানুন।
+          রোগীর লক্ষণসমূহের বিস্তারিত বিবরণ দিন এবং হ্যানিম্যান, বোরিকস ও কেন্টের রেপার্টরি অনুসারে জেমিনি AI-এর মাধ্যমে সম্ভাব্য প্রতিকারগুলো সম্পর্কে জানুন।
           </p>
         </header>
 
@@ -112,10 +116,11 @@ export default function Home() {
             </div>
             )}
             
-            {!isLoading && !error && (topRemedyFromMateriaMedica || topRemedyFromBoericke || topRemedyFromAI) && (
+            {!isLoading && !error && (topRemedyFromMateriaMedica || topRemedyFromBoericke || topRemedyFromKent || topRemedyFromAI) && (
               <TopSuggestions 
                 remedyFromMateriaMedica={topRemedyFromMateriaMedica} 
                 remedyFromBoericke={topRemedyFromBoericke}
+                remedyFromKent={topRemedyFromKent}
                 remedyFromAI={topRemedyFromAI} 
               />
             )}
@@ -126,7 +131,7 @@ export default function Home() {
               </div>
             )}
             
-            {remedies && remedies.length === 0 && !topRemedyFromAI && !topRemedyFromBoericke && !topRemedyFromMateriaMedica && !isLoading && !error && (
+            {remedies && remedies.length === 0 && !topRemedyFromAI && !topRemedyFromBoericke && !topRemedyFromMateriaMedica && !topRemedyFromKent && !isLoading && !error && (
                 <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
                   <Alert className="w-full">
                     <Bot className="h-4 w-4" />

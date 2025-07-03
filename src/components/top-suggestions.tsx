@@ -9,11 +9,12 @@ type Remedy = NonNullable<SuggestRemediesOutput['topRemedyFromMateriaMedica']>;
 interface TopSuggestionsProps {
     remedyFromMateriaMedica: Remedy | null | undefined;
     remedyFromBoericke: Remedy | null | undefined;
+    remedyFromKent: Remedy | null | undefined;
     remedyFromAI: Remedy | null | undefined;
 }
 
 const ScoreCircle: React.FC<{ score: number }> = ({ score }) => {
-    const circumference = 2 * Math.PI * 16; // 2 * pi * radius
+    const circumference = 2 * Math.PI * 16; 
     const strokeDashoffset = circumference - (score / 100) * circumference;
     
     let colorClass = 'text-green-500';
@@ -53,28 +54,35 @@ const ScoreCircle: React.FC<{ score: number }> = ({ score }) => {
   };
   
 
-const SuggestionCard: React.FC<{ remedy: Remedy, type: 'materia-medica' | 'boericke' | 'ai' }> = ({ remedy, type }) => {
+const SuggestionCard: React.FC<{ remedy: Remedy, type: 'materia-medica' | 'boericke' | 'kent' | 'ai' }> = ({ remedy, type }) => {
     const isMateriaMedica = type === 'materia-medica';
     const isBoericke = type === 'boericke';
+    const isKent = type === 'kent';
 
     const cardClasses = isMateriaMedica 
         ? "bg-primary/5 border-primary/20"
         : isBoericke
         ? "bg-blue-500/5 border-blue-500/20"
+        : isKent
+        ? "bg-purple-500/5 border-purple-500/20"
         : "bg-accent/5 border-accent/20";
     
     const iconClasses = isMateriaMedica
         ? "bg-primary text-primary-foreground"
         : isBoericke
         ? "bg-blue-500 text-white"
+        : isKent
+        ? "bg-purple-500 text-white"
         : "bg-accent text-accent-foreground";
 
     const titleText = isMateriaMedica ? "হ্যানিম্যানের Materia Medica থেকে" 
         : isBoericke ? "বোরিকসের Materia Medica থেকে" 
+        : isKent ? "কেন্টের Materia Medica থেকে"
         : "AI থেকে সেরা পরামর্শ";
 
     const icon = isMateriaMedica ? <BookText className="w-4 h-4" /> 
         : isBoericke ? <GraduationCap className="w-4 h-4" /> 
+        : isKent ? <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-book-open-text"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/><path d="M6 8h2"/><path d="M6 12h2"/><path d="M16 8h2"/><path d="M16 12h2"/></svg>
         : <BrainCircuit className="w-4 h-4" />;
 
     return (
@@ -107,19 +115,22 @@ const SuggestionCard: React.FC<{ remedy: Remedy, type: 'materia-medica' | 'boeri
 };
 
 
-export function TopSuggestions({ remedyFromMateriaMedica, remedyFromBoericke, remedyFromAI }: TopSuggestionsProps) {
+export function TopSuggestions({ remedyFromMateriaMedica, remedyFromBoericke, remedyFromKent, remedyFromAI }: TopSuggestionsProps) {
     return (
         <div className="mb-8">
              <div className="flex items-center gap-3 mb-4 md:mb-6">
                 <Star className="w-5 h-5 md:w-6 md:h-6 text-yellow-500" />
                 <h2 className="text-xl md:text-2xl font-bold text-foreground">সেরা পরামর্শ</h2>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4 items-stretch">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4 items-stretch">
                 {remedyFromMateriaMedica && (
                     <SuggestionCard remedy={remedyFromMateriaMedica} type="materia-medica" />
                 )}
                 {remedyFromBoericke && (
                     <SuggestionCard remedy={remedyFromBoericke} type="boericke" />
+                )}
+                {remedyFromKent && (
+                    <SuggestionCard remedy={remedyFromKent} type="kent" />
                 )}
                 {remedyFromAI && (
                      <SuggestionCard remedy={remedyFromAI} type="ai" />
