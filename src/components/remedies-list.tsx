@@ -53,16 +53,16 @@ export function RemediesList({ remedies }: RemediesListProps) {
         <div className="h-full">
             <div className="flex items-center gap-3 mb-6">
                 <Pill className="w-6 h-6 text-primary" />
-                <h2 className="text-2xl font-bold text-foreground">অন্যান্য সম্ভাব্য ঔষধসমূহ</h2>
+                <h2 className="text-xl md:text-2xl font-bold text-foreground">অন্যান্য সম্ভাব্য ঔষধসমূহ</h2>
             </div>
             <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
             {remedies.map((remedy, index) => (
-                <div key={index} className="bg-white p-4 rounded-xl shadow-md border border-gray-200/80 transition-all hover:shadow-lg hover:border-cyan-200">
+                <div key={index} className="bg-white p-3 sm:p-4 rounded-xl shadow-md border border-gray-200/80 transition-all hover:shadow-lg hover:border-cyan-200">
                     <div className="flex items-start gap-4">
                         <ScoreCircle score={remedy.score} />
                         <div className="flex-1 space-y-2">
                             <div>
-                                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                <h3 className="text-lg md:text-xl font-bold text-gray-800 flex items-center gap-2">
                                     <span>{remedy.name}</span>
                                     {remedy.source === 'H' && (
                                         <span className="flex items-center justify-center w-6 h-6 bg-green-100 text-green-800 rounded-full text-xs font-bold ring-2 ring-green-200" title="হ্যানিম্যানের Materia Medica থেকে">H</span>
@@ -74,7 +74,7 @@ export function RemediesList({ remedies }: RemediesListProps) {
                                         <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-bold ring-2 ring-purple-200" title="AI এর সাধারণ জ্ঞান থেকে">AI</span>
                                     )}
                                 </h3>
-                                <p className="mt-1 text-gray-600 text-base leading-relaxed">{remedy.description}</p>
+                                <p className="mt-1 text-sm md:text-base text-gray-600 leading-relaxed">{remedy.description}</p>
                             </div>
                             {remedy.justification && (
                                 <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">

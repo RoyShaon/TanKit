@@ -33,7 +33,7 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
         <div>
             <div className="flex items-center gap-3 mb-6">
                 <FileText className="w-6 h-6 text-primary" />
-                <h2 className="text-2xl font-bold text-foreground">রোগীর তথ্যাবলী</h2>
+                <h2 className="text-xl md:text-2xl font-bold text-foreground">রোগীর তথ্যাবলী</h2>
             </div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -46,7 +46,7 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
                           <FormControl>
                           <Textarea
                               placeholder="এখানে রোগীর মানসিক, শারীরিক, এবং পূর্বের ইতিহাস সহ সকল লক্ষণ বিস্তারিতভাবে লিখুন..."
-                              className="min-h-[250px] text-base bg-gray-50 border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                              className="min-h-[250px] text-sm md:text-base bg-gray-50 border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
                               {...field}
                           />
                           </FormControl>
@@ -54,7 +54,7 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
                       </FormItem>
                       )}
                   />
-                  <Button type="submit" className="w-full text-lg font-bold py-3 h-auto bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg hover:opacity-90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading}>
+                  <Button type="submit" className="w-full text-base md:text-lg font-bold py-3 h-auto bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg hover:opacity-90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading}>
                       {isLoading ? (
                       <>
                           <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />

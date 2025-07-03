@@ -64,7 +64,7 @@ export default function Home() {
           <h1 className="text-4xl md:text-5xl font-bold font-headline text-gray-800 tracking-tight mb-2">
             RoyKit
           </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto">
           রোগীর লক্ষণসমূহের বিস্তারিত বিবরণ দিন এবং জেমিনি এআই-এর মাধ্যমে সম্ভাব্য প্রতিকারগুলো সম্পর্কে জানুন।
           </p>
         </header>
