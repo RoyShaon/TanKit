@@ -56,11 +56,11 @@ const prompt = ai.definePrompt({
 
 Your first task is to categorize the given symptoms into three sections: মানসিক লক্ষণ (Mental Symptoms), শারীরিক লক্ষণ (Physical Symptoms), and পূর্ব ইতিহাস (Past History). Place this analysis in the 'categorizedSymptoms' output field. If no information is provided for a category, you MUST state "উল্লেখ করা হয়নি" (Not mentioned).
 
-After categorizing the symptoms, your second task is to perform a comprehensive analysis using these categorized symptoms and TWO sources of information:
+After categorizing the symptoms, your second task is to perform a comprehensive analysis using these categorized symptoms and TWO distinct sources of information:
 1.  The provided 'Knowledge Base (Materia Medica Pura)'. This is your PRIMARY source. Any remedy found here MUST have its 'source' field set to 'R'.
 2.  Your own extensive, general homeopathic knowledge. Any remedy you suggest from this general knowledge that is NOT in the provided text MUST have its 'source' field set to 'AI'.
 
-Your analysis process must be as follows:
+Your analysis process is critical and must be followed precisely:
 
 1.  First, generate a combined, ranked list of potential remedies from both sources. For each remedy, you must provide:
     a. The medicine's name in Bengali.
@@ -69,9 +69,9 @@ Your analysis process must be as follows:
     d. A detailed 'justification' in Bengali. If the remedy is from the knowledge base ('R'), you MUST explain which of the user's symptoms correspond to specific descriptions in the Materia Medica.
     e. The 'source' of the remedy ('R' or 'AI').
 
-2.  After generating the full list, critically evaluate all options and select TWO top suggestions:
-    a.  **Top Materia Medica Remedy:** From all the remedies with source 'R', identify the one with the absolute highest score. Place this single remedy in the 'topRemedyFromMateriaMedica' field. If no 'R' remedies are found, leave this field null.
-    b.  **Top AI Remedy:** From all the remedies with source 'AI', identify the one with the absolute highest score. Place this single remedy in the 'topRemedyFromAI' field. If no 'AI' remedies are found, leave this field null.
+2.  After generating the full list, you MUST select TWO top suggestions for comparison:
+    a.  **Top Materia Medica Remedy:** From all the remedies with source 'R', identify the one with the absolute highest score. You MUST find at least one remedy from this source if possible. If no relevant remedy is found in the Materia Medica, leave this field null.
+    b.  **Top AI Remedy:** From all the remedies with source 'AI', identify the one with the absolute highest score. It is MANDATORY to provide a suggestion from your own knowledge base ('AI'), even if its score is lower than some remedies from the Materia Medica. This is for comparison purposes. If you genuinely cannot find any AI-based remedy, only then can you leave this field null.
 
 3.  The main 'remedies' array should still contain all the suggestions you found, including the ones you selected as top suggestions.
 
