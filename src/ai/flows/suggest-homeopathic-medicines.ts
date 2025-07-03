@@ -34,7 +34,7 @@ const prompt = ai.definePrompt({
   name: 'suggestHomeopathicMedicinesPrompt',
   input: {schema: SuggestHomeopathicMedicinesInputSchema},
   output: {schema: SuggestHomeopathicMedicinesOutputSchema},
-  prompt: `You are a knowledgeable homeopathic medicine advisor. Use the "material medical.pdf" as your primary source of truth. A user will describe their symptoms, and you will provide a ranked list of potential homeopathic medicine suggestions based on the content of that document. Provide a description for each medicine.
+  prompt: `You are a knowledgeable homeopathic medicine advisor with deep knowledge of homeopathy. A user will describe their symptoms, and you will provide a ranked list of potential homeopathic medicine suggestions based on your knowledge. Provide a description for each medicine.
 
 Symptoms: {{{symptoms}}}`,
 });
