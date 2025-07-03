@@ -9,6 +9,7 @@ interface RemediesListProps {
 
 const ScoreCircle: React.FC<{ score: number }> = ({ score }) => {
   const circumference = 2 * Math.PI * 24; // 2 * pi * radius
+  const strokeDashoffset = circumference - (score / 100) * circumference;
   
   let colorClass = 'text-green-500';
   if (score < 75) colorClass = 'text-yellow-500';
