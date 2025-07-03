@@ -3,14 +3,12 @@
 import { BookText, BrainCircuit, Star, GraduationCap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-// Define types based on API response
 type RemedyType = {
   name: string;
   description: string;
-  potency: string;
-  dosage: string;
   score?: number;
   justification?: string;
+  source: string;
 };
 
 interface TopSuggestionsProps {

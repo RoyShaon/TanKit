@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-// Removed direct import of Genkit flows
+import { punctuateText } from "@/ai/flows/punctuate-text";
 
 const formSchema = z.object({
   symptoms: z.string().min(10, {
@@ -135,25 +135,16 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.code === "Space" && !e.repeat) {
         e.preventDefault();
-        startListening();
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.code === "Space") {
-        e.preventDefault();
-        stopListening();
+        isListening ? stopListening() : startListening();
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyUp);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [startListening, stopListening]);
+  }, [isListening, startListening, stopListening]);
 
   const handleRearrange = async () => {
     const currentSymptoms = form.getValues("symptoms");
@@ -163,20 +154,12 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
 
     setIsRearranging(true);
     try {
-      const response = await fetch("/api/punctuate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text: currentSymptoms }),
-      });
+      const result = await punctuateText({ text: currentSymptoms });
 
-      const result = await response.json();
-
-      if (response.ok && result.punctuatedText) {
+      if (result.punctuatedText) {
         form.setValue("symptoms", result.punctuatedText);
       } else {
-        throw new Error(result.error || "Failed to punctuate text");
+        throw new Error("Failed to punctuate text");
       }
     } catch (e) {
       console.error("Error punctuating text:", e);

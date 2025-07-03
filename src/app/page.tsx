@@ -3,57 +3,7 @@
 import { useState } from "react";
 import { Leaf, Bot, AlertTriangle, LoaderCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-// Removed direct import of Genkit flows
-
-// Define types based on API response
-type SuggestRemediesOutput = {
-  remedies: Array<{
-    name: string;
-    confidence: string;
-    reasoning: string;
-    score?: number;
-    description?: string;
-    justification?: string;
-  }>;
-  topRemedyFromMateriaMedica?: {
-    name: string;
-    description: string;
-    potency: string;
-    dosage: string;
-    score?: number;
-    justification?: string;
-  };
-  topRemedyFromBoericke?: {
-    name: string;
-    description: string;
-    potency: string;
-    dosage: string;
-    score?: number;
-    justification?: string;
-  };
-  topRemedyFromKent?: {
-    name: string;
-    description: string;
-    potency: string;
-    dosage: string;
-    score?: number;
-    justification?: string;
-  };
-  topRemedyFromAI?: {
-    name: string;
-    description: string;
-    potency: string;
-    dosage: string;
-    score?: number;
-    justification?: string;
-  };
-  categorizedSymptoms?: {
-    mentalSymptoms: string;
-    physicalSymptoms: string;
-    history: string;
-  };
-  bestRepertorySuggestion?: string;
-};
+import { suggestRemedies, type SuggestRemediesOutput } from "@/ai/flows/suggest-remedies";
 import { SymptomForm, type SymptomFormValues } from "@/components/symptom-form";
 import { RemediesList } from "@/components/remedies-list";
 import { TopSuggestions } from "@/components/top-suggestions";
@@ -83,18 +33,10 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await fetch("/api/suggest-remedies", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ symptoms: values.symptoms }),
-      });
+      const result = await suggestRemedies({ symptoms: values.symptoms });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Failed to get remedy suggestions");
+      if (!result) {
+        throw new Error("Failed to get remedy suggestions");
       }
 
       const topRemedyNames = [

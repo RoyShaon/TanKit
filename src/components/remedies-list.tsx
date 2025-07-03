@@ -4,11 +4,10 @@ import { Pill } from "lucide-react";
 
 interface RemedyItem {
   name: string;
-  confidence: string;
-  reasoning: string;
-  description?: string;
-  justification?: string;
-  score?: number;
+  description: string;
+  score: number;
+  justification: string;
+  source: string;
 }
 
 interface RemediesListProps {
