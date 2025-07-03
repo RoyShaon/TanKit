@@ -1278,6 +1278,10 @@ video {
 .border-blue-500\/20 {
   border-color: rgb(59 130 246 / 0.2);
 }
+.border-red-500 {
+  --tw-border-opacity: 1;
+  border-color: rgb(239 68 68 / var(--tw-border-opacity, 1));
+}
 .border-l-transparent {
   border-left-color: transparent;
 }
@@ -1378,6 +1382,9 @@ video {
 }
 .bg-blue-500\/5 {
   background-color: rgb(59 130 246 / 0.05);
+}
+.bg-red-500\/20 {
+  background-color: rgb(239 68 68 / 0.2);
 }
 .bg-gradient-to-br {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
@@ -2052,6 +2059,10 @@ video {
  
 .hover\:bg-sidebar-accent:hover {
   background-color: hsl(var(--sidebar-accent));
+}
+ 
+.hover\:bg-red-500\/30:hover {
+  background-color: rgb(239 68 68 / 0.3);
 }
  
 .hover\:text-accent-foreground:hover {
