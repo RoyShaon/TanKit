@@ -62,7 +62,15 @@ export function RemediesList({ remedies }: RemediesListProps) {
                         <ScoreCircle score={remedy.score} />
                         <div className="flex-1 space-y-2">
                             <div>
-                                <h3 className="text-xl font-bold text-gray-800">{remedy.name}</h3>
+                                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                    <span>{remedy.name}</span>
+                                    {remedy.source === 'R' && (
+                                        <span className="flex items-center justify-center w-6 h-6 bg-cyan-100 text-cyan-800 rounded-full text-xs font-bold ring-2 ring-cyan-200" title="Materia Medica থেকে">R</span>
+                                    )}
+                                    {remedy.source === 'AI' && (
+                                        <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-bold ring-2 ring-purple-200" title="AI এর সাধারণ জ্ঞান থেকে">AI</span>
+                                    )}
+                                </h3>
                                 <p className="mt-1 text-gray-600 text-base leading-relaxed">{remedy.description}</p>
                             </div>
                             {remedy.justification && (

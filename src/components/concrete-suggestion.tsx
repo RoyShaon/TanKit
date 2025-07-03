@@ -19,7 +19,15 @@ export function ConcreteSuggestion({ suggestion }: ConcreteSuggestionProps) {
             
             <div className="space-y-4">
                 <div>
-                    <h3 className="text-xl font-bold text-gray-800">{suggestion.name}</h3>
+                    <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <span>{suggestion.name}</span>
+                        {suggestion.source === 'R' && (
+                            <span className="flex items-center justify-center w-6 h-6 bg-green-100 text-green-800 rounded-full text-xs font-bold ring-2 ring-green-200" title="Materia Medica থেকে">R</span>
+                        )}
+                        {suggestion.source === 'AI' && (
+                            <span className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-bold ring-2 ring-indigo-200" title="AI এর সাধারণ জ্ঞান থেকে">AI</span>
+                        )}
+                    </h3>
                     <p className="mt-1 text-gray-600 text-base leading-relaxed">{suggestion.description}</p>
                 </div>
                 <div>
