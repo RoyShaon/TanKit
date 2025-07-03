@@ -36,6 +36,7 @@ const CategorizedSymptomsSchema = z.object({
 
 const SuggestRemediesOutputSchema = z.object({
   categorizedSymptoms: CategorizedSymptomsSchema.describe("The user's symptoms, categorized by the AI."),
+  bestRepertorySuggestion: z.string().describe('A brief analysis in Bengali explaining which repertory (Hahnemann, Boericke, or general AI knowledge) is likely most suitable for this specific case and why.'),
   remedies: z
     .array(RemedySchema)
     .describe('A ranked list of potential homeopathic medicine suggestions, based on all available knowledge sources.'),
@@ -57,16 +58,27 @@ const prompt = ai.definePrompt({
     boerickeMateriaMedica: z.string(),
   })},
   output: {schema: SuggestRemediesOutputSchema},
-  prompt: `You are a highly experienced homeopathic doctor. You will be given a block of text containing a patient's symptoms in Bengali and two knowledge bases: "Hahnemann's Materia Medica Pura" and "Boericke's Materia Medica".
+  prompt: `You are a highly experienced homeopathic doctor. You will analyze the patient's symptoms based on the core principles of classical homeopathy: 
+1.  **Totality of Symptoms:** Consider all symptoms together—mental, emotional, general, and particular. The goal is to treat the patient, not just the disease.
+2.  **Individualization and Peculiar Symptoms:** Give special weight to Strange, Rare, and Peculiar (SRP) symptoms that distinguish this patient from others with a similar complaint.
+3.  **Miasmatic Diagnosis:** Consider the underlying miasmatic cause (Psora, Sycosis, Syphilis, Tubercular) to understand the chronic nature of the disease.
+4.  **Mental and Emotional Symptoms:** Prioritize the patient's mental and emotional state—their temperament, fears, anger, and thoughts—as they are often the key indicators.
+5.  **Modalities Analysis:** Pay close attention to what makes the symptoms better or worse (time of day, weather, food, posture, motion).
+6.  **General & Particular Symptoms:** Differentiate between general symptoms (affecting the whole person, like sleep, thirst, temperature) and particular symptoms (related to a specific organ). General symptoms hold more weight.
+7.  **Hering's Law of Cure:** Structure your analysis to understand the direction of cure and predict the healing response.
 
-Your first task is to categorize the given symptoms into three sections: মানসিক লক্ষণ (Mental Symptoms), শারীরিক লক্ষণ (Physical Symptoms), and পূর্ব ইতিহাস (Past History). Place this analysis in the 'categorizedSymptoms' output field. If no information is provided for a category, you MUST state "উল্লেখ করা হয়নি" (Not mentioned).
+Now, proceed with the following tasks precisely:
 
-After categorizing the symptoms, your second task is to perform a comprehensive analysis using these categorized symptoms and THREE distinct sources of information:
+Your **first task** is to categorize the given symptoms into three sections: মানসিক লক্ষণ (Mental Symptoms), শারীরিক লক্ষণ (Physical Symptoms), and পূর্ব ইতিহাস (Past History). Place this analysis in the 'categorizedSymptoms' output field. If no information is provided for a category, you MUST state "উল্লেখ করা হয়নি" (Not mentioned).
+
+Your **second task** is to analyze the case as a whole and determine which knowledge source (Hahnemann's Materia Medica, Boericke's Materia Medica, or your own general AI knowledge) appears most suited for finding the primary remedy for this specific patient. Provide a short justification for your choice in the 'bestRepertorySuggestion' field.
+
+Your **third task** is to perform a comprehensive analysis using your categorized symptoms and THREE distinct sources of information:
 1.  The provided 'Knowledge Base 1 (Hahnemann's Materia Medica Pura)'. This is your PRIMARY source. Any remedy found here MUST have its 'source' field set to 'H'.
 2.  The provided 'Knowledge Base 2 (Boericke's Materia Medica)'. Any remedy found here MUST have its 'source' field set to 'B'.
 3.  Your own extensive, general homeopathic knowledge. Any remedy you suggest from this general knowledge that is NOT in the provided texts MUST have its 'source' field set to 'AI'.
 
-Your analysis process is critical and must be followed precisely:
+Your analysis process is critical:
 
 1.  First, generate a combined, ranked list of potential remedies from all three sources. For each remedy, you must provide:
     a. The medicine's name in English.
@@ -75,14 +87,14 @@ Your analysis process is critical and must be followed precisely:
     d. A detailed 'justification' in Bengali. If the remedy is from a knowledge base ('H' or 'B'), you MUST explain which of the user's symptoms correspond to specific descriptions in that Materia Medica.
     e. The 'source' of the remedy ('H', 'B', or 'AI').
 
-2.  After generating the full list, you MUST select THREE top suggestions for comparison. It is MANDATORY to provide a top suggestion for each of the three sources, even if their scores are low. This is for comparison purposes.
+2.  After generating the full list, you MUST select THREE top suggestions for comparison. It is MANDATORY to provide a top suggestion for each of the three sources, even if their scores are low.
     a.  **Top Hahnemann Remedy:** From all the remedies with source 'H', identify the one with the absolute highest score. Place this in the 'topRemedyFromMateriaMedica' field. If you cannot find any relevant remedy from this source, you must still select the best possible match. Do not leave this field null.
     b.  **Top Boericke Remedy:** From all the remedies with source 'B', identify the one with the absolute highest score. Place this in the 'topRemedyFromBoericke' field. If you cannot find any relevant remedy from this source, you must still select the best possible match. Do not leave this field null.
     c.  **Top AI Remedy:** From all the remedies with source 'AI', identify the one with the absolute highest score. It is MANDATORY to provide a suggestion from your own knowledge base ('AI'). Place this in the 'topRemedyFromAI' field.
 
 3.  The main 'remedies' array should still contain all the suggestions you found, including the ones you selected as top suggestions.
 
-All output (descriptions, justifications, categorized symptoms) MUST be in Bengali, except for the medicine names, which must be in English.
+All output (descriptions, justifications, categorized symptoms, and repertory suggestions) MUST be in Bengali, except for the medicine names, which must be in English.
 
 Knowledge Base 1 (Hahnemann's Materia Medica Pura):
 {{{hahnemannMateriaMedica}}}
@@ -90,7 +102,7 @@ Knowledge Base 1 (Hahnemann's Materia Medica Pura):
 Knowledge Base 2 (Boericke's Materia Medica):
 {{{boerickeMateriaMedica}}}
 
-Symptoms: {{{symptoms}}}`,
+Symptoms: {{{symptoms}}}`
 });
 
 const suggestRemediesFlow = ai.defineFlow(

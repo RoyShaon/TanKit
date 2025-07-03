@@ -8,6 +8,7 @@ import { SymptomForm, type SymptomFormValues } from '@/components/symptom-form';
 import { RemediesList } from '@/components/remedies-list';
 import { TopSuggestions } from '@/components/top-suggestions';
 import { CategorizedSymptomsDisplay } from '@/components/categorized-symptoms-display';
+import { RepertorySuggestionDisplay } from '@/components/repertory-suggestion-display';
 
 export default function Home() {
   const [remedies, setRemedies] = useState<SuggestRemediesOutput['remedies'] | null>(null);
@@ -15,6 +16,7 @@ export default function Home() {
   const [topRemedyFromBoericke, setTopRemedyFromBoericke] = useState<SuggestRemediesOutput['topRemedyFromBoericke'] | null>(null);
   const [topRemedyFromAI, setTopRemedyFromAI] = useState<SuggestRemediesOutput['topRemedyFromAI'] | null>(null);
   const [categorizedSymptoms, setCategorizedSymptoms] = useState<SuggestRemediesOutput['categorizedSymptoms'] | null>(null);
+  const [bestRepertorySuggestion, setBestRepertorySuggestion] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,6 +27,7 @@ export default function Home() {
     setTopRemedyFromBoericke(null);
     setTopRemedyFromAI(null);
     setCategorizedSymptoms(null);
+    setBestRepertorySuggestion(null);
     setError(null);
 
     try {
@@ -45,6 +48,7 @@ export default function Home() {
       setTopRemedyFromBoericke(result.topRemedyFromBoericke);
       setTopRemedyFromAI(result.topRemedyFromAI);
       setCategorizedSymptoms(result.categorizedSymptoms);
+      setBestRepertorySuggestion(result.bestRepertorySuggestion);
 
     } catch (e) {
       setError('সাজেশন আনতে একটি ত্রুটি ঘটেছে। অনুগ্রহ করে আপনার সংযোগ বা API কী পরীক্ষা করে আবার চেষ্টা করুন।');
@@ -72,6 +76,9 @@ export default function Home() {
         <main className="flex-1 grid lg:grid-cols-2 gap-8 items-start">
           <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 md:p-8 border border-gray-200 flex flex-col gap-8">
             <SymptomForm onSubmit={handleSubmit} isLoading={isLoading} />
+            {bestRepertorySuggestion && !isLoading && !error && (
+                <RepertorySuggestionDisplay suggestion={bestRepertorySuggestion} />
+            )}
             {categorizedSymptoms && !isLoading && !error && (
               <CategorizedSymptomsDisplay symptoms={categorizedSymptoms} />
             )}
