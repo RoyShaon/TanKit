@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Leaf, Bot, AlertTriangle, LoaderCircle, BookText, BrainCircuit } from 'lucide-react';
+import { Leaf, Bot, AlertTriangle, LoaderCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { suggestRemedies, type SuggestRemediesOutput } from '@/ai/flows/suggest-remedies';
 import { SymptomForm } from '@/components/symptom-form';
