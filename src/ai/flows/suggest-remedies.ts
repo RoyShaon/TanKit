@@ -16,7 +16,7 @@ import * as path from 'path';
 const SuggestRemediesInputSchema = z.object({
   symptoms: z
     .string()
-    .describe('A detailed description of the symptoms experienced by the user.'),
+    .describe('A detailed description of the symptoms experienced by the user in Bengali.'),
 });
 export type SuggestRemediesInput = z.infer<typeof SuggestRemediesInputSchema>;
 
@@ -28,7 +28,14 @@ const RemedySchema = z.object({
   source: z.string().describe("The source of the information. Use 'R' if the remedy is found in the provided Materia Medica. Use 'AI' if it is from the AI's general knowledge.")
 });
 
+const CategorizedSymptomsSchema = z.object({
+    mentalSymptoms: z.string().describe('Extracted mental symptoms in Bengali. State "উল্লেখ করা হয়নি" if none are found.'),
+    physicalSymptoms: z.string().describe('Extracted physical symptoms in Bengali. State "উল্লেখ করা হয়নি" if none are found.'),
+    history: z.string().describe('Extracted past history in Bengali. State "উল্লেখ করা হয়নি" if none are found.'),
+});
+
 const SuggestRemediesOutputSchema = z.object({
+  categorizedSymptoms: CategorizedSymptomsSchema.describe("The user's symptoms, categorized by the AI."),
   remedies: z
     .array(RemedySchema)
     .describe('A ranked list of potential homeopathic medicine suggestions, strictly based on the provided knowledge base.'),
@@ -45,13 +52,15 @@ const prompt = ai.definePrompt({
   name: 'suggestRemediesPrompt',
   input: {schema: SuggestRemediesInputSchema},
   output: {schema: SuggestRemediesOutputSchema},
-  prompt: `You are a highly experienced homeopathic doctor. You will be given a list of symptoms in Bengali and a knowledge base from the "Materia Medica Pura".
+  prompt: `You are a highly experienced homeopathic doctor. You will be given a block of text containing a patient's symptoms in Bengali and a knowledge base from the "Materia Medica Pura".
 
-Your task is to perform a comprehensive analysis using TWO sources of information:
+Your first task is to categorize the given symptoms into three sections: মানসিক লক্ষণ (Mental Symptoms), শারীরিক লক্ষণ (Physical Symptoms), and পূর্ব ইতিহাস (Past History). Place this analysis in the 'categorizedSymptoms' output field. If no information is provided for a category, you MUST state "উল্লেখ করা হয়নি" (Not mentioned).
+
+After categorizing the symptoms, your second task is to perform a comprehensive analysis using these categorized symptoms and TWO sources of information:
 1.  The provided 'Knowledge Base (Materia Medica Pura)'. This is your PRIMARY source. Any remedy found here MUST have its 'source' field set to 'R'.
 2.  Your own extensive, general homeopathic knowledge. Any remedy you suggest from this general knowledge that is NOT in the provided text MUST have its 'source' field set to 'AI'.
 
-Your process must be as follows:
+Your analysis process must be as follows:
 
 1.  First, generate a combined, ranked list of potential remedies from both sources. For each remedy, you must provide:
     a. The medicine's name in Bengali.

@@ -9,11 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { LoaderCircle, FileText } from 'lucide-react';
 
 const formSchema = z.object({
-  physicalSymptoms: z.string().min(10, {
-    message: 'অনুগ্রহ করে শারীরিক লক্ষণগুলি কমপক্ষে ১০টি অক্ষরে বর্ণনা করুন।',
+  symptoms: z.string().min(10, {
+    message: 'অনুগ্রহ করে লক্ষণগুলি কমপক্ষে ১০টি অক্ষরে বর্ণনা করুন।',
   }),
-  mentalSymptoms: z.string().optional(),
-  history: z.string().optional(),
 });
 
 export type SymptomFormValues = z.infer<typeof formSchema>;
@@ -27,9 +25,7 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
     const form = useForm<SymptomFormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-          physicalSymptoms: '',
-          mentalSymptoms: '',
-          history: '',
+          symptoms: '',
         },
       });
 
@@ -43,48 +39,14 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <FormField
                       control={form.control}
-                      name="physicalSymptoms"
+                      name="symptoms"
                       render={({ field }) => (
                       <FormItem>
-                          <FormLabel className="block mb-2 font-semibold text-gray-600">শারীরিক লক্ষণ (আবশ্যক)</FormLabel>
+                          <FormLabel className="block mb-2 font-semibold text-gray-600">রোগীর লক্ষণসমূহ</FormLabel>
                           <FormControl>
                           <Textarea
-                              placeholder="এখানে রোগীর সমস্ত শারীরিক লক্ষণ বিস্তারিতভাবে লিখুন। যেমন: মাথার ডানদিকে ব্যথা, ঠাণ্ডা বাতাসে আরাম, মিষ্টি খেতে প্রবল ইচ্ছা ইত্যাদি..."
-                              className="min-h-[150px] text-base bg-gray-50 border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                              {...field}
-                          />
-                          </FormControl>
-                          <FormMessage />
-                      </FormItem>
-                      )}
-                  />
-                  <FormField
-                      control={form.control}
-                      name="mentalSymptoms"
-                      render={({ field }) => (
-                      <FormItem>
-                          <FormLabel className="block mb-2 font-semibold text-gray-600">মানসিক লক্ষণ</FormLabel>
-                          <FormControl>
-                          <Textarea
-                              placeholder="রোগীর মানসিক অবস্থা বর্ণনা করুন। যেমন: একা থাকতে ভয়, খিটখিটে মেজাজ, সবকিছুতে উদাসীনতা ইত্যাদি..."
-                              className="min-h-[100px] text-base bg-gray-50 border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                              {...field}
-                          />
-                          </FormControl>
-                          <FormMessage />
-                      </FormItem>
-                      )}
-                  />
-                  <FormField
-                      control={form.control}
-                      name="history"
-                      render={({ field }) => (
-                      <FormItem>
-                          <FormLabel className="block mb-2 font-semibold text-gray-600">পূর্ব ইতিহাস এবং অন্যান্য তথ্য</FormLabel>
-                          <FormControl>
-                          <Textarea
-                              placeholder="রোগীর পুরনো অসুস্থতা, বংশগত রোগ বা অন্য কোনো প্রাসঙ্গিক তথ্য এখানে দিন।"
-                              className="min-h-[100px] text-base bg-gray-50 border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                              placeholder="এখানে রোগীর মানসিক, শারীরিক, এবং পূর্বের ইতিহাস সহ সকল লক্ষণ বিস্তারিতভাবে লিখুন..."
+                              className="min-h-[250px] text-base bg-gray-50 border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
                               {...field}
                           />
                           </FormControl>

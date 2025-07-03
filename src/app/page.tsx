@@ -7,11 +7,13 @@ import { suggestRemedies, type SuggestRemediesOutput } from '@/ai/flows/suggest-
 import { SymptomForm, type SymptomFormValues } from '@/components/symptom-form';
 import { RemediesList } from '@/components/remedies-list';
 import { TopSuggestions } from '@/components/top-suggestions';
+import { CategorizedSymptomsDisplay } from '@/components/categorized-symptoms-display';
 
 export default function Home() {
   const [remedies, setRemedies] = useState<SuggestRemediesOutput['remedies'] | null>(null);
   const [topRemedyFromMateriaMedica, setTopRemedyFromMateriaMedica] = useState<SuggestRemediesOutput['topRemedyFromMateriaMedica'] | null>(null);
   const [topRemedyFromAI, setTopRemedyFromAI] = useState<SuggestRemediesOutput['topRemedyFromAI'] | null>(null);
+  const [categorizedSymptoms, setCategorizedSymptoms] = useState<SuggestRemediesOutput['categorizedSymptoms'] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,16 +22,11 @@ export default function Home() {
     setRemedies(null);
     setTopRemedyFromMateriaMedica(null);
     setTopRemedyFromAI(null);
+    setCategorizedSymptoms(null);
     setError(null);
 
-    const formattedSymptoms = `
-      মানসিক লক্ষণ: ${values.mentalSymptoms || 'উল্লেখ করা হয়নি'}
-      শারীরিক লক্ষণ: ${values.physicalSymptoms}
-      পূর্ব ইতিহাস: ${values.history || 'উল্লেখ করা হয়নি'}
-    `.trim();
-
     try {
-      const result = await suggestRemedies({ symptoms: formattedSymptoms });
+      const result = await suggestRemedies({ symptoms: values.symptoms });
       // Filter out the top suggestions from the main list to avoid duplication in the UI
       const topIds = [result.topRemedyFromMateriaMedica?.name, result.topRemedyFromAI?.name].filter(Boolean);
       const filteredRemedies = result.remedies.filter(r => !topIds.includes(r.name));
@@ -37,6 +34,7 @@ export default function Home() {
       setRemedies(filteredRemedies.sort((a, b) => b.score - a.score));
       setTopRemedyFromMateriaMedica(result.topRemedyFromMateriaMedica);
       setTopRemedyFromAI(result.topRemedyFromAI);
+      setCategorizedSymptoms(result.categorizedSymptoms);
 
     } catch (e) {
       setError('সাজেশন আনতে একটি ত্রুটি ঘটেছে। অনুগ্রহ করে আপনার সংযোগ বা API কী পরীক্ষা করে আবার চেষ্টা করুন।');
@@ -94,6 +92,10 @@ export default function Home() {
             </div>
             )}
             
+            {categorizedSymptoms && !isLoading && (
+              <CategorizedSymptomsDisplay symptoms={categorizedSymptoms} />
+            )}
+            
             {(topRemedyFromMateriaMedica || topRemedyFromAI) && (
               <TopSuggestions 
                 remedyFromMateriaMedica={topRemedyFromMateriaMedica} 
@@ -124,9 +126,6 @@ export default function Home() {
 
       <footer className="py-6 mt-auto bg-transparent">
         <div className="container mx-auto px-4 max-w-7xl">
-          <p className="text-sm text-center text-gray-500">
-          এই টুলটি শুধুমাত্র তথ্যের উদ্দেশ্যে তৈরি। চিকিৎসা সংক্রান্ত যেকোনো প্রয়োজনে সর্বদা একজন যোগ্য চিকিৎসকের পরামর্শ নিন।
-          </p>
           <p className="text-sm text-center text-muted-foreground mt-2">
             ডেভেলপ করেছেন ROY SHAON | © {new Date().getFullYear()} সর্বসত্ত্ব সংরক্ষিত।
           </p>
