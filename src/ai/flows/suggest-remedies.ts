@@ -10,6 +10,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {readFile} from 'fs/promises';
+import path from 'path';
 
 const SuggestRemediesInputSchema = z.object({
   symptoms: z
@@ -29,11 +31,18 @@ export async function suggestRemedies(input: SuggestRemediesInput): Promise<Sugg
   return suggestRemediesFlow(input);
 }
 
+const PromptInputSchema = SuggestRemediesInputSchema.extend({
+  knowledgeBase: z.string().describe('The knowledge base of homeopathic remedies.'),
+});
+
 const prompt = ai.definePrompt({
   name: 'suggestRemediesPrompt',
-  input: {schema: SuggestRemediesInputSchema},
+  input: {schema: PromptInputSchema},
   output: {schema: SuggestRemediesOutputSchema},
-  prompt: `You are a knowledgeable homeopathic medicine advisor. The user will describe their symptoms in Bengali. You must analyze these symptoms and, based on your extensive homeopathic knowledge, provide a ranked list of potential homeopathic medicine suggestions. Both the medicine name and its description must be in Bengali.
+  prompt: `You are a knowledgeable homeopathic medicine advisor. You will use the provided Materia Medica text as your primary source of truth. The user will describe their symptoms in Bengali. You must analyze these symptoms and, based on the provided knowledge, provide a ranked list of potential homeopathic medicine suggestions. Both the medicine name and its description must be in Bengali.
+
+Materia Medica:
+{{{knowledgeBase}}}
 
 Symptoms: {{{symptoms}}}`,
 });
@@ -45,7 +54,10 @@ const suggestRemediesFlow = ai.defineFlow(
     outputSchema: SuggestRemediesOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const knowledgeBasePath = path.join(process.cwd(), 'src', 'data', 'knowledge-base.txt');
+    const knowledgeBase = await readFile(knowledgeBasePath, 'utf-8');
+
+    const {output} = await prompt({...input, knowledgeBase});
     return output!;
   }
 );
