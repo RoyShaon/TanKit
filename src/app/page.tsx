@@ -1,14 +1,64 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Leaf, Bot, AlertTriangle, LoaderCircle } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { suggestRemedies, type SuggestRemediesOutput } from '@/ai/flows/suggest-remedies';
-import { SymptomForm, type SymptomFormValues } from '@/components/symptom-form';
-import { RemediesList } from '@/components/remedies-list';
-import { TopSuggestions } from '@/components/top-suggestions';
-import { CategorizedSymptomsDisplay } from '@/components/categorized-symptoms-display';
-import { RepertorySuggestionDisplay } from '@/components/repertory-suggestion-display';
+import { useState } from "react";
+import { Leaf, Bot, AlertTriangle, LoaderCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+// Removed direct import of Genkit flows
+
+// Define types based on API response
+type SuggestRemediesOutput = {
+  remedies: Array<{
+    name: string;
+    confidence: string;
+    reasoning: string;
+    score?: number;
+    description?: string;
+    justification?: string;
+  }>;
+  topRemedyFromMateriaMedica?: {
+    name: string;
+    description: string;
+    potency: string;
+    dosage: string;
+    score?: number;
+    justification?: string;
+  };
+  topRemedyFromBoericke?: {
+    name: string;
+    description: string;
+    potency: string;
+    dosage: string;
+    score?: number;
+    justification?: string;
+  };
+  topRemedyFromKent?: {
+    name: string;
+    description: string;
+    potency: string;
+    dosage: string;
+    score?: number;
+    justification?: string;
+  };
+  topRemedyFromAI?: {
+    name: string;
+    description: string;
+    potency: string;
+    dosage: string;
+    score?: number;
+    justification?: string;
+  };
+  categorizedSymptoms?: {
+    mentalSymptoms: string;
+    physicalSymptoms: string;
+    history: string;
+  };
+  bestRepertorySuggestion?: string;
+};
+import { SymptomForm, type SymptomFormValues } from "@/components/symptom-form";
+import { RemediesList } from "@/components/remedies-list";
+import { TopSuggestions } from "@/components/top-suggestions";
+import { CategorizedSymptomsDisplay } from "@/components/categorized-symptoms-display";
+import { RepertorySuggestionDisplay } from "@/components/repertory-suggestion-display";
 
 export default function Home() {
   const [remedies, setRemedies] = useState<SuggestRemediesOutput['remedies'] | null>(null);
@@ -33,7 +83,19 @@ export default function Home() {
     setError(null);
 
     try {
-      const result = await suggestRemedies({ symptoms: values.symptoms });
+      const response = await fetch("/api/suggest-remedies", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ symptoms: values.symptoms }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to get remedy suggestions");
+      }
 
       const topRemedyNames = [
         result.topRemedyFromMateriaMedica?.name,
@@ -43,19 +105,22 @@ export default function Home() {
       ].filter(Boolean);
 
       const otherRemedies = result.remedies.filter(
-        (remedy) => !topRemedyNames.includes(remedy.name)
+        (remedy: any) => !topRemedyNames.includes(remedy.name),
       );
 
-      setRemedies(otherRemedies.sort((a, b) => b.score - a.score));
+      setRemedies(
+        otherRemedies.sort((a: any, b: any) => (b.score || 0) - (a.score || 0)),
+      );
       setTopRemedyFromMateriaMedica(result.topRemedyFromMateriaMedica);
       setTopRemedyFromBoericke(result.topRemedyFromBoericke);
       setTopRemedyFromKent(result.topRemedyFromKent);
       setTopRemedyFromAI(result.topRemedyFromAI);
       setCategorizedSymptoms(result.categorizedSymptoms);
       setBestRepertorySuggestion(result.bestRepertorySuggestion);
-
     } catch (e) {
-      setError('সাজেশন আনতে একটি ত্রুটি ঘটেছে। অনুগ্রহ করে আপনার সংযোগ বা API কী পরীক্ষা করে আবার চেষ্টা করুন।');
+      setError(
+        "সাজেশন আনতে একটি ত্রুটি ঘটেছে। অনুগ্রহ করে আপনার সংযোগ বা API কী পরীক্ষা করে আবার চেষ্টা করুন।",
+      );
       console.error(e);
     } finally {
       setIsLoading(false);
@@ -73,7 +138,7 @@ export default function Home() {
             TanKit
           </h1>
           <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto">
-          রোগীর লক্ষণসমূহের বিস্তারিত বিবরণ দিন এবং হ্যানিম্যান, বোরিকস ও কেন্টের রেপার্টরি অনুসারে জেমিনি AI-এর মাধ্যমে সম্ভাব্য প্রতিকারগুলো সম্পর্কে জানুন।
+            রোগীর লক্ষণসমূহের বিস্তারিত বিবরণ দিন এবং হ্যানিম্যান, বোরিকস ও কেন্টের রেপার্টরি অনুসারে জেমিনি AI-এর মাধ্যমে সম্ভাব্য প্রতিকারগুলো সম্পর্কে জানুন।
           </p>
         </header>
 
@@ -81,7 +146,9 @@ export default function Home() {
           <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 md:p-8 border border-gray-200 flex flex-col gap-8">
             <SymptomForm onSubmit={handleSubmit} isLoading={isLoading} />
             {bestRepertorySuggestion && !isLoading && !error && (
-                <RepertorySuggestionDisplay suggestion={bestRepertorySuggestion} />
+              <RepertorySuggestionDisplay
+                suggestion={bestRepertorySuggestion}
+              />
             )}
             {categorizedSymptoms && !isLoading && !error && (
               <CategorizedSymptomsDisplay symptoms={categorizedSymptoms} />
@@ -91,19 +158,21 @@ export default function Home() {
           <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 md:p-8 border border-gray-200 min-h-[500px]">
             {isLoading && (
               <div className="flex flex-col items-center justify-center text-center h-full">
-                  <LoaderCircle className="w-12 h-12 animate-spin text-primary mb-4" />
-                  <p className="text-muted-foreground">লক্ষণ বিশ্লেষণ করা হচ্ছে...</p>
+                <LoaderCircle className="w-12 h-12 animate-spin text-primary mb-4" />
+                <p className="text-muted-foreground">
+                  লক্ষণ বিশ্লেষণ করা হচ্ছে...
+                </p>
               </div>
             )}
 
             {error && (
-               <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
+              <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
                 <Alert variant="destructive" className="w-full">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertTitle>ত্রুটি</AlertTitle>
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
-               </div>
+              </div>
             )}
 
             {!isLoading && !error && remedies === null && (
@@ -126,7 +195,7 @@ export default function Home() {
             )}
 
             {remedies && remedies.length > 0 && !isLoading && !error && (
-              <div className='mt-8'>
+              <div className="mt-8">
                 <RemediesList remedies={remedies} />
               </div>
             )}
@@ -137,11 +206,13 @@ export default function Home() {
                     <Bot className="h-4 w-4" />
                     <AlertTitle>কোনো সাজেশন পাওয়া যায়নি</AlertTitle>
                     <AlertDescription>
-                        বর্ণিত লক্ষণগুলির জন্য আমরা কোনও নির্দিষ্ট প্রতিকার খুঁজে পাইনি। অনুগ্রহ করে বাক্যটি পুনর্গঠন করে বা আরও বিশদ বিবরণ যোগ করে আবার চেষ্টা করুন।
+                      বর্ণিত লক্ষণগুলির জন্য আমরা কোনও নির্দিষ্ট প্রতিকার খুঁজে
+                      পাইনি। অনুগ্রহ করে বাক্যটি পুনর্গঠন করে বা আরও বিশদ বিবরণ
+                      যোগ করে আবার চেষ্টা করুন।
                     </AlertDescription>
                   </Alert>
                 </div>
-            )}
+              )}
           </section>
         </main>
       </div>
@@ -149,7 +220,8 @@ export default function Home() {
       <footer className="py-6 mt-auto bg-transparent">
         <div className="container mx-auto px-4 max-w-7xl">
           <p className="text-sm text-center text-muted-foreground mt-2">
-            ডেভেলপ করেছেন TAN | © {new Date().getFullYear()} সর্বসত্ত্ব সংরক্ষিত।
+            ডেভেলপ করেছেন TAN | © {new Date().getFullYear()} সর্বসত্ত্ব
+            সংরক্ষিত।
           </p>
         </div>
       </footer>

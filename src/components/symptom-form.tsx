@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { FileText, LoaderCircle, Mic, Wand2 } from 'lucide-react';
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FileText, LoaderCircle, Mic, Wand2 } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -14,13 +14,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
-import { punctuateText } from '@/ai/flows/punctuate-text';
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+// Removed direct import of Genkit flows
 
 const formSchema = z.object({
   symptoms: z.string().min(10, {
-    message: 'অনুগ্রহ করে লক্ষণগুলি কমপক্ষে ১০টি অক্ষরে বর্ণনা করুন।',
+    message: "অনুগ্রহ করে লক্ষণগুলি কমপক্ষে ১০টি অক্ষরে বর্ণনা করুন।",
   }),
 });
 
@@ -43,27 +43,27 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
   const form = useForm<SymptomFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      symptoms: '',
+      symptoms: "",
     },
   });
 
   const [isListening, setIsListening] = useState(false);
   const [isRearranging, setIsRearranging] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const textBeforeListening = useRef('');
+  const textBeforeListening = useRef("");
 
   useEffect(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      console.warn('Browser does not support SpeechRecognition.');
+      console.warn("Browser does not support SpeechRecognition.");
       return;
     }
 
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = 'bn-BD'; // Bengali (Bangladesh)
+    recognition.lang = "bn-BD"; // Bengali (Bangladesh)
 
     recognition.onstart = () => {
       setIsListening(true);
@@ -74,13 +74,13 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
     };
 
     recognition.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
+      console.error("Speech recognition error:", event.error);
       setIsListening(false);
     };
 
     recognition.onresult = (event) => {
-      let finalTranscript = '';
-      let interimTranscript = '';
+      let finalTranscript = "";
+      let interimTranscript = "";
 
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         if (event.results[i].isFinal) {
@@ -90,13 +90,13 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
         }
       }
 
-      const separator = textBeforeListening.current.length > 0 ? ' ' : '';
+      const separator = textBeforeListening.current.length > 0 ? " " : "";
       form.setValue(
-        'symptoms',
+        "symptoms",
         textBeforeListening.current +
           separator +
           finalTranscript +
-          interimTranscript
+          interimTranscript,
       );
     };
 
@@ -111,11 +111,11 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
 
   const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening) {
-      textBeforeListening.current = form.getValues('symptoms');
+      textBeforeListening.current = form.getValues("symptoms");
       try {
         recognitionRef.current.start();
       } catch (e) {
-        if (e instanceof DOMException && e.name === 'InvalidStateError') {
+        if (e instanceof DOMException && e.name === "InvalidStateError") {
           // This error can happen in some browsers if start() is called again before the 'onstart' event has fired.
           // We can safely ignore it.
         } else {
@@ -133,42 +133,53 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.code === 'Space' && !e.repeat) {
+      if (e.ctrlKey && e.code === "Space" && !e.repeat) {
         e.preventDefault();
         startListening();
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.code === 'Space') {
+      if (e.ctrlKey && e.code === "Space") {
         e.preventDefault();
         stopListening();
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
     };
   }, [startListening, stopListening]);
 
   const handleRearrange = async () => {
-    const currentSymptoms = form.getValues('symptoms');
+    const currentSymptoms = form.getValues("symptoms");
     if (!currentSymptoms || currentSymptoms.trim().length < 10) {
       return;
     }
 
     setIsRearranging(true);
     try {
-      const result = await punctuateText({ text: currentSymptoms });
-      if (result && result.punctuatedText) {
-        form.setValue('symptoms', result.punctuatedText);
+      const response = await fetch("/api/punctuate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: currentSymptoms }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.punctuatedText) {
+        form.setValue("symptoms", result.punctuatedText);
+      } else {
+        throw new Error(result.error || "Failed to punctuate text");
       }
     } catch (e) {
-      console.error('Error punctuating text:', e);
+      console.error("Error punctuating text:", e);
     } finally {
       setIsRearranging(false);
     }
@@ -200,7 +211,9 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
                   />
                 </FormControl>
                 <p className="text-xs text-muted-foreground mt-2">
-                  টিপস: ভয়েস টাইপিংয়ের জন্য মাইক আইকন (`Ctrl + Space`) ব্যবহার করুন। লেখা শেষে দাড়ি-কমা যোগ করতে ম্যাজিক ওয়ান্ড আইকনে ক্লিক করুন।
+                  টিপস: ভয়েস টাইপিংয়ের জন্য মাইক আইকন (`Ctrl + Space`) ব্যবহার
+                  করুন। লেখা শেষে দাড়ি-কমা যোগ করতে ম্যাজিক ওয়ান্ড আইকনে ক্লিক
+                  করুন।
                 </p>
                 <FormMessage />
               </FormItem>
@@ -218,7 +231,7 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
                   বিশ্লেষণ করা হচ্ছে...
                 </>
               ) : (
-                'বিশ্লেষণ করুন'
+                "বিশ্লেষণ করুন"
               )}
             </Button>
             <Button
@@ -241,8 +254,8 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
               size="icon"
               className={`h-auto aspect-square p-2 shrink-0 transition-colors ${
                 isListening
-                  ? 'bg-red-500/20 border-red-500 text-red-500 hover:bg-red-500/30'
-                  : ''
+                  ? "bg-red-500/20 border-red-500 text-red-500 hover:bg-red-500/30"
+                  : ""
               }`}
               onMouseDown={startListening}
               onMouseUp={stopListening}
@@ -253,7 +266,7 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
             >
               <Mic
                 className={`w-5 h-5 md:w-6 md:h-6 ${
-                  isListening ? 'animate-pulse' : ''
+                  isListening ? "animate-pulse" : ""
                 }`}
               />
             </Button>

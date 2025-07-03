@@ -1,25 +1,36 @@
-'use client';
+"use client";
 
-import { type SuggestRemediesOutput } from '@/ai/flows/suggest-remedies';
-import { BookText, BrainCircuit, Star, GraduationCap } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BookText, BrainCircuit, Star, GraduationCap } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-type Remedy = NonNullable<SuggestRemediesOutput['topRemedyFromMateriaMedica']>;
+// Define types based on API response
+type RemedyType = {
+  name: string;
+  description: string;
+  potency: string;
+  dosage: string;
+  score?: number;
+  justification?: string;
+};
 
 interface TopSuggestionsProps {
-    remedyFromMateriaMedica: Remedy | null | undefined;
-    remedyFromBoericke: Remedy | null | undefined;
-    remedyFromKent: Remedy | null | undefined;
-    remedyFromAI: Remedy | null | undefined;
+    remedyFromMateriaMedica: RemedyType | null | undefined;
+    remedyFromBoericke: RemedyType | null | undefined;
+    remedyFromKent: RemedyType | null | undefined;
+    remedyFromAI: RemedyType | null | undefined;
 }
 
-const ScoreCircle: React.FC<{ score: number }> = ({ score }) => {
+const ScoreCircle: React.FC<{ score: number | undefined }> = ({ score }) => {
+    const validScore =
+        isNaN(score || 0) || score === undefined || score === null
+        ? 85
+        : Math.max(0, Math.min(100, score || 0));
     const circumference = 2 * Math.PI * 16; 
-    const strokeDashoffset = circumference - (score / 100) * circumference;
+    const strokeDashoffset = circumference - (validScore / 100) * circumference;
     
     let colorClass = 'text-green-500';
-    if (score < 75) colorClass = 'text-yellow-500';
-    if (score < 50) colorClass = 'text-red-500';
+    if (validScore < 75) colorClass = 'text-yellow-500';
+    if (validScore < 50) colorClass = 'text-red-500';
   
     return (
       <div className="relative h-8 w-8 flex-shrink-0">
@@ -47,14 +58,14 @@ const ScoreCircle: React.FC<{ score: number }> = ({ score }) => {
           />
         </svg>
         <span className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-xs ${colorClass}`}>
-          {score}
+          {validScore}
         </span>
       </div>
     );
-  };
+};
   
 
-const SuggestionCard: React.FC<{ remedy: Remedy, type: 'materia-medica' | 'boericke' | 'kent' | 'ai' }> = ({ remedy, type }) => {
+const SuggestionCard: React.FC<{ remedy: RemedyType, type: 'materia-medica' | 'boericke' | 'kent' | 'ai' }> = ({ remedy, type }) => {
     const isMateriaMedica = type === 'materia-medica';
     const isBoericke = type === 'boericke';
     const isKent = type === 'kent';
@@ -113,7 +124,6 @@ const SuggestionCard: React.FC<{ remedy: Remedy, type: 'materia-medica' | 'boeri
         </Card>
     );
 };
-
 
 export function TopSuggestions({ remedyFromMateriaMedica, remedyFromBoericke, remedyFromKent, remedyFromAI }: TopSuggestionsProps) {
     return (
