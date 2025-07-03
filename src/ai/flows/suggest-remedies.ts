@@ -25,7 +25,7 @@ const RemedySchema = z.object({
   description: z.string().describe("A brief explanation in Bengali for why the remedy is suggested, based on the Materia Medica Pura."),
   score: z.number().describe("A similarity score from 1 to 100, where 100 is a perfect match between the user's symptoms and the remedy's profile in the knowledge base."),
   justification: z.string().describe("A detailed justification in Bengali, quoting or referencing specific symptoms from the 'Materia Medica Pura' that match the user's symptoms. This explains the basis for the score."),
-  source: z.string().describe("The source of the information. Use 'R' if the remedy is found in the provided Materia Medica. Use 'AI' if it is from the AI's general knowledge.")
+  source: z.string().describe("The source of the information. Use 'H' if the remedy is found in the provided Hahnemann's Materia Medica. Use 'AI' if it is from the AI's general knowledge.")
 });
 
 const CategorizedSymptomsSchema = z.object({
@@ -39,7 +39,7 @@ const SuggestRemediesOutputSchema = z.object({
   remedies: z
     .array(RemedySchema)
     .describe('A ranked list of potential homeopathic medicine suggestions, strictly based on the provided knowledge base.'),
-  topRemedyFromMateriaMedica: z.optional(z.nullable(RemedySchema)).describe("The single highest-scoring remedy found in the provided 'Materia Medica Pura' knowledge base."),
+  topRemedyFromMateriaMedica: z.optional(z.nullable(RemedySchema)).describe("The single highest-scoring remedy found in the provided 'Hahnemann's Materia Medica Pura' knowledge base."),
   topRemedyFromAI: z.optional(z.nullable(RemedySchema)).describe("The single highest-scoring remedy suggested from the AI's general homeopathic knowledge, which was not found in the provided Materia Medica."),
 });
 export type SuggestRemediesOutput = z.infer<typeof SuggestRemediesOutputSchema>;
@@ -52,12 +52,12 @@ const prompt = ai.definePrompt({
   name: 'suggestRemediesPrompt',
   input: {schema: SuggestRemediesInputSchema},
   output: {schema: SuggestRemediesOutputSchema},
-  prompt: `You are a highly experienced homeopathic doctor. You will be given a block of text containing a patient's symptoms in Bengali and a knowledge base from the "Materia Medica Pura".
+  prompt: `You are a highly experienced homeopathic doctor. You will be given a block of text containing a patient's symptoms in Bengali and a knowledge base from "Hahnemann's Materia Medica Pura".
 
 Your first task is to categorize the given symptoms into three sections: মানসিক লক্ষণ (Mental Symptoms), শারীরিক লক্ষণ (Physical Symptoms), and পূর্ব ইতিহাস (Past History). Place this analysis in the 'categorizedSymptoms' output field. If no information is provided for a category, you MUST state "উল্লেখ করা হয়নি" (Not mentioned).
 
 After categorizing the symptoms, your second task is to perform a comprehensive analysis using these categorized symptoms and TWO distinct sources of information:
-1.  The provided 'Knowledge Base (Materia Medica Pura)'. This is your PRIMARY source. Any remedy found here MUST have its 'source' field set to 'R'.
+1.  The provided 'Knowledge Base (Hahnemann's Materia Medica Pura)'. This is your PRIMARY source. Any remedy found here MUST have its 'source' field set to 'H'.
 2.  Your own extensive, general homeopathic knowledge. Any remedy you suggest from this general knowledge that is NOT in the provided text MUST have its 'source' field set to 'AI'.
 
 Your analysis process is critical and must be followed precisely:
@@ -66,11 +66,11 @@ Your analysis process is critical and must be followed precisely:
     a. The medicine's name in Bengali.
     b. A brief description in Bengali.
     c. A confidence score from 1 to 100.
-    d. A detailed 'justification' in Bengali. If the remedy is from the knowledge base ('R'), you MUST explain which of the user's symptoms correspond to specific descriptions in the Materia Medica.
-    e. The 'source' of the remedy ('R' or 'AI').
+    d. A detailed 'justification' in Bengali. If the remedy is from the knowledge base ('H'), you MUST explain which of the user's symptoms correspond to specific descriptions in the Materia Medica.
+    e. The 'source' of the remedy ('H' or 'AI').
 
 2.  After generating the full list, you MUST select TWO top suggestions for comparison:
-    a.  **Top Materia Medica Remedy:** From all the remedies with source 'R', identify the one with the absolute highest score. You MUST find at least one remedy from this source if possible. If no relevant remedy is found in the Materia Medica, leave this field null.
+    a.  **Top Materia Medica Remedy:** From all the remedies with source 'H', identify the one with the absolute highest score. You MUST find at least one remedy from this source if possible. If no relevant remedy is found in the Materia Medica, leave this field null.
     b.  **Top AI Remedy:** From all the remedies with source 'AI', identify the one with the absolute highest score. It is MANDATORY to provide a suggestion from your own knowledge base ('AI'), even if its score is lower than some remedies from the Materia Medica. This is for comparison purposes. If you genuinely cannot find any AI-based remedy, only then can you leave this field null.
 
 3.  The main 'remedies' array should still contain all the suggestions you found, including the ones you selected as top suggestions.

@@ -63,7 +63,7 @@ const SuggestionCard: React.FC<{ remedy: Remedy, type: 'materia-medica' | 'ai' }
         ? "bg-primary text-primary-foreground"
         : "bg-accent text-accent-foreground";
 
-    const titleText = isMateriaMedica ? "Materia Medica থেকে সেরা পরামর্শ" : "AI থেকে সেরা পরামর্শ";
+    const titleText = isMateriaMedica ? "হ্যানিম্যানের Materia Medica থেকে সেরা পরামর্শ" : "AI থেকে সেরা পরামর্শ";
 
     return (
         <Card className={`shadow-lg ${cardClasses} flex flex-col`}>
@@ -80,8 +80,8 @@ const SuggestionCard: React.FC<{ remedy: Remedy, type: 'materia-medica' | 'ai' }
                         <div className="flex-1">
                             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                                 <span>{remedy.name}</span>
-                                {remedy.source === 'R' && (
-                                    <span className="flex items-center justify-center w-6 h-6 bg-green-100 text-green-800 rounded-full text-xs font-bold ring-2 ring-green-200" title="Materia Medica থেকে">R</span>
+                                {remedy.source === 'H' && (
+                                    <span className="flex items-center justify-center w-6 h-6 bg-green-100 text-green-800 rounded-full text-xs font-bold ring-2 ring-green-200" title="হ্যানিম্যানের Materia Medica থেকে">H</span>
                                 )}
                                 {remedy.source === 'AI' && (
                                     <span className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-bold ring-2 ring-indigo-200" title="AI এর সাধারণ জ্ঞান থেকে">AI</span>
