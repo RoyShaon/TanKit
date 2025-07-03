@@ -19,15 +19,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const prompt = `Based on the following symptoms in Bengali, suggest homeopathic remedies. Please analyze the symptoms and provide:
+    const prompt = `Based on the following symptoms in Bengali, analyze and suggest homeopathic remedies. Please:
 
-1. Top remedy from Materia Medica with detailed explanation
-2. List of other potential remedies
-3. Categorized symptoms analysis
+1. Categorize ALL the symptoms mentioned into mental, physical, and history categories
+2. Suggest appropriate homeopathic remedies
+3. Provide detailed explanation
 
-Symptoms: ${symptoms}
+Patient Symptoms: ${symptoms}
 
-Please respond in JSON format with the following structure:
+Please respond in JSON format with the following exact structure:
 {
   "topRemedyFromMateriaMedica": {
     "name": "Remedy name",
@@ -43,11 +43,13 @@ Please respond in JSON format with the following structure:
     }
   ],
   "categorizedSymptoms": {
-    "mental": ["mental symptoms"],
-    "physical": ["physical symptoms"],
-    "general": ["general symptoms"]
+    "mentalSymptoms": "All mental/psychological symptoms from the input text in Bengali",
+    "physicalSymptoms": "All physical/bodily symptoms from the input text in Bengali",
+    "history": "All previous medical history and past conditions from the input text in Bengali"
   }
-}`;
+}
+
+Important: Extract and categorize ALL symptoms mentioned in the input. Do not leave any symptoms uncategorized.`;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
