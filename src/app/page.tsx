@@ -12,6 +12,7 @@ import { CategorizedSymptomsDisplay } from '@/components/categorized-symptoms-di
 export default function Home() {
   const [remedies, setRemedies] = useState<SuggestRemediesOutput['remedies'] | null>(null);
   const [topRemedyFromMateriaMedica, setTopRemedyFromMateriaMedica] = useState<SuggestRemediesOutput['topRemedyFromMateriaMedica'] | null>(null);
+  const [topRemedyFromBoericke, setTopRemedyFromBoericke] = useState<SuggestRemediesOutput['topRemedyFromBoericke'] | null>(null);
   const [topRemedyFromAI, setTopRemedyFromAI] = useState<SuggestRemediesOutput['topRemedyFromAI'] | null>(null);
   const [categorizedSymptoms, setCategorizedSymptoms] = useState<SuggestRemediesOutput['categorizedSymptoms'] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,18 +22,24 @@ export default function Home() {
     setIsLoading(true);
     setRemedies(null);
     setTopRemedyFromMateriaMedica(null);
+    setTopRemedyFromBoericke(null);
     setTopRemedyFromAI(null);
     setCategorizedSymptoms(null);
     setError(null);
 
     try {
       const result = await suggestRemedies({ symptoms: values.symptoms });
-      // Filter out the top suggestions from the main list to avoid duplication in the UI
-      const topIds = [result.topRemedyFromMateriaMedica?.name, result.topRemedyFromAI?.name].filter(Boolean);
+      const topIds = [
+        result.topRemedyFromMateriaMedica?.name, 
+        result.topRemedyFromBoericke?.name, 
+        result.topRemedyFromAI?.name
+      ].filter(Boolean);
+      
       const filteredRemedies = result.remedies.filter(r => !topIds.includes(r.name));
       
       setRemedies(filteredRemedies.sort((a, b) => b.score - a.score));
       setTopRemedyFromMateriaMedica(result.topRemedyFromMateriaMedica);
+      setTopRemedyFromBoericke(result.topRemedyFromBoericke);
       setTopRemedyFromAI(result.topRemedyFromAI);
       setCategorizedSymptoms(result.categorizedSymptoms);
 
@@ -95,9 +102,10 @@ export default function Home() {
             </div>
             )}
             
-            {!isLoading && !error && (topRemedyFromMateriaMedica || topRemedyFromAI) && (
+            {!isLoading && !error && (topRemedyFromMateriaMedica || topRemedyFromBoericke || topRemedyFromAI) && (
               <TopSuggestions 
                 remedyFromMateriaMedica={topRemedyFromMateriaMedica} 
+                remedyFromBoericke={topRemedyFromBoericke}
                 remedyFromAI={topRemedyFromAI} 
               />
             )}
@@ -108,7 +116,7 @@ export default function Home() {
               </div>
             )}
             
-            {remedies && remedies.length === 0 && !topRemedyFromAI && !topRemedyFromMateriaMedica && !isLoading && !error && (
+            {remedies && remedies.length === 0 && !topRemedyFromAI && !topRemedyFromBoericke && !topRemedyFromMateriaMedica && !isLoading && !error && (
                 <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
                   <Alert className="w-full">
                     <Bot className="h-4 w-4" />

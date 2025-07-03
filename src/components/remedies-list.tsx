@@ -53,7 +53,7 @@ export function RemediesList({ remedies }: RemediesListProps) {
         <div className="h-full">
             <div className="flex items-center gap-3 mb-6">
                 <Pill className="w-6 h-6 text-primary" />
-                <h2 className="text-2xl font-bold text-foreground">সম্ভাব্য ঔষধসমূহ</h2>
+                <h2 className="text-2xl font-bold text-foreground">অন্যান্য সম্ভাব্য ঔষধসমূহ</h2>
             </div>
             <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
             {remedies.map((remedy, index) => (
@@ -66,6 +66,9 @@ export function RemediesList({ remedies }: RemediesListProps) {
                                     <span>{remedy.name}</span>
                                     {remedy.source === 'H' && (
                                         <span className="flex items-center justify-center w-6 h-6 bg-green-100 text-green-800 rounded-full text-xs font-bold ring-2 ring-green-200" title="হ্যানিম্যানের Materia Medica থেকে">H</span>
+                                    )}
+                                    {remedy.source === 'B' && (
+                                        <span className="flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-800 rounded-full text-xs font-bold ring-2 ring-blue-200" title="বোরিকসের Materia Medica থেকে">B</span>
                                     )}
                                     {remedy.source === 'AI' && (
                                         <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-bold ring-2 ring-purple-200" title="AI এর সাধারণ জ্ঞান থেকে">AI</span>
