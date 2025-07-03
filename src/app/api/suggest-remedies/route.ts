@@ -106,9 +106,9 @@ Please respond in JSON format with the following structure:
           },
         ],
         categorizedSymptoms: {
-          mental: [],
-          physical: [],
-          general: [],
+          mentalSymptoms: "লক্ষণ বিশ্লেষণে সমস্যা হয়েছে",
+          physicalSymptoms: "লক্ষণ বিশ্লেষণে সমস্যা হয়েছে",
+          history: "লক্ষণ বিশ্লেষণে সমস্যা হয়েছে",
         },
       };
     }

@@ -22,9 +22,9 @@ type SuggestRemediesOutput = {
   topRemedyFromBoericke?: any;
   topRemedyFromAI?: any;
   categorizedSymptoms?: {
-    mental: string[];
-    physical: string[];
-    general: string[];
+    mentalSymptoms: string;
+    physicalSymptoms: string;
+    history: string;
   };
   bestRepertorySuggestion?: string;
 };
@@ -122,7 +122,7 @@ export default function Home() {
           <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto">
             রোগীর লক্ষণসমূহের বিস্তারিত বিবরণ দিন এবং হ্যানিম্যান ও বোরিকসের
             রেপার্টরি অনুসারে জেমিনি এআই-এর মাধ্যমে সম্ভাব্য প্রতিকারগুলো
-            সম্পর্��ে জানুন।
+            সম্পর্কে জানুন।
           </p>
         </header>
 
@@ -201,7 +201,7 @@ export default function Home() {
                 <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
                   <Alert className="w-full">
                     <Bot className="h-4 w-4" />
-                    <AlertTitle>কোনো সাজেশন পাওয়া যায়নি</AlertTitle>
+                    <AlertTitle>কোনো সাজেশন প���ওয়া যায়নি</AlertTitle>
                     <AlertDescription>
                       বর্ণিত লক্ষণগুলির জন্য আমরা কোনও নির্দিষ্ট প্রতিকার খুঁজে
                       পাইনি। অনুগ্রহ করে বাক্যটি পুনর্গঠন করে বা আরও বিশদ বিবরণ
