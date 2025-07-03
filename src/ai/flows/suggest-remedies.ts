@@ -26,6 +26,11 @@ const SuggestRemediesOutputSchema = z.object({
       score: z.number().describe("A similarity score from 1 to 100, where 100 is a perfect match between the user's symptoms and the remedy's profile in your knowledge base."),
     }))
     .describe('A ranked list of potential homeopathic medicine suggestions.'),
+  concreteSuggestion: z.object({
+      name: z.string().describe("The name of the single best homeopathic medicine in Bengali."),
+      description: z.string().describe("A brief explanation in Bengali for why this remedy is suggested."),
+      justification: z.string().describe("A concise justification in Bengali for why this medicine is the best choice among all the options, based on the provided symptoms.")
+  }).describe("After analyzing all suggestions, provide the single most concrete and highly recommended remedy here.")
 });
 export type SuggestRemediesOutput = z.infer<typeof SuggestRemediesOutputSchema>;
 
@@ -39,10 +44,14 @@ const prompt = ai.definePrompt({
   output: {schema: SuggestRemediesOutputSchema},
   prompt: `You are a knowledgeable homeopathic medicine advisor. The user will describe their symptoms in Bengali. You must analyze these symptoms and, based on your knowledge, provide a ranked list of potential homeopathic medicine suggestions. 
 
-For each suggestion, provide:
+For each suggestion in the 'remedies' array, provide:
 1. The medicine name in Bengali.
 2. A brief description in Bengali explaining why it is a suitable choice.
 3. A similarity score from 1 to 100, where 100 indicates a perfect match.
+
+After generating the list of remedies, analyze all the options and select the single best, most concrete remedy. Place this selection in the 'concreteSuggestion' field. For this concrete suggestion, you must provide a name, a description, and a clear justification explaining why it is the most suitable choice based on the user's symptoms.
+
+All output must be in Bengali.
 
 Symptoms: {{{symptoms}}}`,
 });

@@ -6,6 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { suggestRemedies, type SuggestRemediesOutput } from '@/ai/flows/suggest-remedies';
 import { SymptomForm } from '@/components/symptom-form';
 import { RemediesList } from '@/components/remedies-list';
+import { ConcreteSuggestion } from '@/components/concrete-suggestion';
 
 interface SymptomFormValues {
     symptoms: string;
@@ -13,16 +14,19 @@ interface SymptomFormValues {
 
 export default function Home() {
   const [remedies, setRemedies] = useState<SuggestRemediesOutput['remedies'] | null>(null);
+  const [concreteSuggestion, setConcreteSuggestion] = useState<SuggestRemediesOutput['concreteSuggestion'] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(values: SymptomFormValues) {
     setIsLoading(true);
     setRemedies(null);
+    setConcreteSuggestion(null);
     setError(null);
     try {
       const result = await suggestRemedies({ symptoms: values.symptoms });
       setRemedies(result.remedies.sort((a, b) => b.score - a.score));
+      setConcreteSuggestion(result.concreteSuggestion);
     } catch (e) {
       setError('সাজেশন আনতে একটি ত্রুটি ঘটেছে। অনুগ্রহ করে আপনার সংযোগ বা API কী পরীক্ষা করে আবার চেষ্টা করুন।');
       console.error(e);
@@ -79,6 +83,10 @@ export default function Home() {
             </div>
             )}
             
+            {concreteSuggestion && (
+              <ConcreteSuggestion suggestion={concreteSuggestion} />
+            )}
+
             {remedies && remedies.length > 0 && (
               <RemediesList remedies={remedies} />
             )}

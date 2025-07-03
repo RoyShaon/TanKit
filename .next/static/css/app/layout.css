@@ -760,6 +760,9 @@ video {
 .mt-auto {
   margin-top: auto;
 }
+.mb-8 {
+  margin-bottom: 2rem;
+}
 .block {
   display: block;
 }
@@ -1232,6 +1235,9 @@ video {
 .border-transparent {
   border-color: transparent;
 }
+.border-primary\/20 {
+  border-color: hsl(var(--primary) / 0.2);
+}
 .border-l-transparent {
   border-left-color: transparent;
 }
@@ -1587,6 +1593,10 @@ video {
 .text-yellow-500 {
   --tw-text-opacity: 1;
   color: rgb(234 179 8 / var(--tw-text-opacity, 1));
+}
+.text-gray-700 {
+  --tw-text-opacity: 1;
+  color: rgb(55 65 81 / var(--tw-text-opacity, 1));
 }
 .underline-offset-4 {
   text-underline-offset: 4px;
