@@ -33,7 +33,7 @@ const prompt = ai.definePrompt({
   name: 'suggestRemediesPrompt',
   input: {schema: SuggestRemediesInputSchema},
   output: {schema: SuggestRemediesOutputSchema},
-  prompt: `You are a knowledgeable homeopathic medicine advisor. The user will describe their symptoms in Bengali. You must analyze these symptoms and provide a ranked list of potential homeopathic medicine suggestions. Both the medicine name and its description must be in Bengali.
+  prompt: `You are a knowledgeable homeopathic medicine advisor. Your primary source of information is the provided "material medical.pdf" document. The user will describe their symptoms in Bengali. You must analyze these symptoms and, based on the PDF, provide a ranked list of potential homeopathic medicine suggestions. Both the medicine name and its description must be in Bengali.
 
 Symptoms: {{{symptoms}}}`,
 });

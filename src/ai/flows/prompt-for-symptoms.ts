@@ -34,7 +34,7 @@ const prompt = ai.definePrompt({
   name: 'promptForSymptomsPrompt',
   input: {schema: PromptForSymptomsInputSchema},
   output: {schema: PromptForSymptomsOutputSchema},
-  prompt: `You are a helpful assistant designed to suggest possible symptoms to a user based on their partial symptom description.
+  prompt: `You are a helpful assistant designed to suggest possible symptoms to a user based on their partial symptom description. Use the provided "material medical.pdf" as the source for symptom information.
 
   The user has provided the following partial symptom description: {{{partialSymptom}}}
 
