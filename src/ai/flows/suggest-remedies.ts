@@ -10,6 +10,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 const SuggestRemediesInputSchema = z.object({
   symptoms: z
@@ -42,20 +44,24 @@ const prompt = ai.definePrompt({
   name: 'suggestRemediesPrompt',
   input: {schema: SuggestRemediesInputSchema},
   output: {schema: SuggestRemediesOutputSchema},
-  prompt: `You are a highly experienced and meticulous homeopathic doctor. You will be given a list of symptoms in Bengali.
+  prompt: `You are a highly experienced and meticulous homeopathic doctor. You will be given a list of symptoms in Bengali and a knowledge base from the "Materia Medica Pura".
 
 Your task is to perform the following steps:
 1.  Carefully and thoroughly analyze all provided symptoms.
-2.  Generate a ranked list of potential homeopathic remedies that match these symptoms. For each remedy in the 'remedies' array, you must provide:
+2.  Use the provided "Materia Medica Pura" as your primary source of knowledge.
+3.  Generate a ranked list of potential homeopathic remedies that match these symptoms. For each remedy in the 'remedies' array, you must provide:
     a. The medicine's name in Bengali.
     b. A brief description in Bengali explaining its relevance.
-    c. A confidence score from 1 to 100, indicating how well it matches the symptoms.
-3.  After generating the list, critically evaluate all options. In the 'concreteSuggestion' field, select the single most appropriate remedy. You must provide:
+    c. A confidence score from 1 to 100, indicating how well it matches the symptoms based on the knowledge base.
+4.  After generating the list, critically evaluate all options. In the 'concreteSuggestion' field, select the single most appropriate remedy. You must provide:
     a. The name of the best remedy in Bengali.
     b. Its description in Bengali.
-    c. A detailed justification in Bengali, explaining why this remedy is the superior choice compared to the other options, based on the specific symptoms provided.
+    c. A detailed justification in Bengali, explaining why this remedy is the superior choice compared to the other options, based on the specific symptoms provided and the "Materia Medica Pura".
 
 All output MUST be in Bengali.
+
+Knowledge Base (Materia Medica Pura):
+{{{materiaMedica}}}
 
 Symptoms: {{{symptoms}}}`,
 });
@@ -67,7 +73,10 @@ const suggestRemediesFlow = ai.defineFlow(
     outputSchema: SuggestRemediesOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const materiaMedicaPath = path.join(process.cwd(), 'src', 'data', 'materia-medica.txt');
+    const materiaMedica = await fs.readFile(materiaMedicaPath, 'utf-8');
+    
+    const {output} = await prompt({...input, materiaMedica});
     return output!;
   }
 );

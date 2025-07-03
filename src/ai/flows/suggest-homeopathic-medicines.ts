@@ -1,4 +1,3 @@
-// src/ai/flows/suggest-homeopathic-medicines.ts
 'use server';
 
 /**
@@ -10,7 +9,9 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'zod';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 const SuggestHomeopathicMedicinesInputSchema = z.object({
   symptoms: z
@@ -34,7 +35,10 @@ const prompt = ai.definePrompt({
   name: 'suggestHomeopathicMedicinesPrompt',
   input: {schema: SuggestHomeopathicMedicinesInputSchema},
   output: {schema: SuggestHomeopathicMedicinesOutputSchema},
-  prompt: `You are a knowledgeable homeopathic medicine advisor. A user will describe their symptoms, and you will provide a ranked list of potential homeopathic medicine suggestions based on your knowledge. Provide a description for each medicine.
+  prompt: `You are a knowledgeable homeopathic medicine advisor. A user will describe their symptoms, and you will provide a ranked list of potential homeopathic medicine suggestions based on the provided "Materia Medica Pura" knowledge base. Provide a description for each medicine.
+
+Knowledge Base (Materia Medica Pura):
+{{{materiaMedica}}}
 
 Symptoms: {{{symptoms}}}`,
 });
@@ -46,7 +50,10 @@ const suggestHomeopathicMedicinesFlow = ai.defineFlow(
     outputSchema: SuggestHomeopathicMedicinesOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const materiaMedicaPath = path.join(process.cwd(), 'src', 'data', 'materia-medica.txt');
+    const materiaMedica = await fs.readFile(materiaMedicaPath, 'utf-8');
+
+    const {output} = await prompt({...input, materiaMedica});
     return output!;
   }
 );

@@ -1,4 +1,3 @@
-// src/ai/flows/prompt-for-symptoms.ts
 'use server';
 
 /**
@@ -11,6 +10,9 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+
 
 const PromptForSymptomsInputSchema = z.object({
   partialSymptom: z
@@ -34,7 +36,7 @@ const prompt = ai.definePrompt({
   name: 'promptForSymptomsPrompt',
   input: {schema: PromptForSymptomsInputSchema},
   output: {schema: PromptForSymptomsOutputSchema},
-  prompt: `You are a helpful assistant designed to suggest possible symptoms to a user based on their partial symptom description. Use your knowledge of homeopathic medicine.
+  prompt: `You are a helpful assistant designed to suggest possible symptoms to a user based on their partial symptom description. Use the provided "Materia Medica Pura" as your primary knowledge base.
 
   The user has provided the following partial symptom description: {{{partialSymptom}}}
 
@@ -43,6 +45,9 @@ const prompt = ai.definePrompt({
 
   Example:
   ["Headache", "Nausea", "Dizziness"]
+
+  Knowledge Base (Materia Medica Pura):
+  {{{materiaMedica}}}
   `,
 });
 
@@ -53,7 +58,10 @@ const promptForSymptomsFlow = ai.defineFlow(
     outputSchema: PromptForSymptomsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const materiaMedicaPath = path.join(process.cwd(), 'src', 'data', 'materia-medica.txt');
+    const materiaMedica = await fs.readFile(materiaMedicaPath, 'utf-8');
+
+    const {output} = await prompt({...input, materiaMedica});
     return output!;
   }
 );
