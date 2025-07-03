@@ -1,7 +1,7 @@
 'use client';
 
 import { type SuggestRemediesOutput } from '@/ai/flows/suggest-remedies';
-import { Pill, FileText } from 'lucide-react';
+import { Pill } from 'lucide-react';
 
 interface RemediesListProps {
     remedies: NonNullable<SuggestRemediesOutput>['remedies'];
@@ -58,11 +58,19 @@ export function RemediesList({ remedies }: RemediesListProps) {
             <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
             {remedies.map((remedy, index) => (
                 <div key={index} className="bg-white p-4 rounded-xl shadow-md border border-gray-200/80 transition-all hover:shadow-lg hover:border-cyan-200">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-start gap-4">
                         <ScoreCircle score={remedy.score} />
-                        <div className="flex-1">
-                            <h3 className="text-xl font-bold text-gray-800">{remedy.name}</h3>
-                            <p className="mt-1 text-gray-600 text-base leading-relaxed">{remedy.description}</p>
+                        <div className="flex-1 space-y-2">
+                            <div>
+                                <h3 className="text-xl font-bold text-gray-800">{remedy.name}</h3>
+                                <p className="mt-1 text-gray-600 text-base leading-relaxed">{remedy.description}</p>
+                            </div>
+                            {remedy.justification && (
+                                <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                    <h4 className="font-semibold text-gray-700 mb-1 text-sm">ভিত্তি:</h4>
+                                    <p className="text-gray-500 text-sm leading-relaxed whitespace-pre-wrap">{remedy.justification}</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
