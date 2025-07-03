@@ -10,8 +10,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import {readFile} from 'fs/promises';
-import path from 'path';
 
 const SuggestRemediesInputSchema = z.object({
   symptoms: z
@@ -22,7 +20,11 @@ export type SuggestRemediesInput = z.infer<typeof SuggestRemediesInputSchema>;
 
 const SuggestRemediesOutputSchema = z.object({
   remedies: z
-    .array(z.object({name: z.string(), description: z.string()}))
+    .array(z.object({
+      name: z.string().describe("The name of the suggested homeopathic medicine in Bengali."),
+      description: z.string().describe("A brief explanation in Bengali for why the remedy is suggested, based on your knowledge."),
+      score: z.number().describe("A similarity score from 1 to 100, where 100 is a perfect match between the user's symptoms and the remedy's profile in your knowledge base."),
+    }))
     .describe('A ranked list of potential homeopathic medicine suggestions.'),
 });
 export type SuggestRemediesOutput = z.infer<typeof SuggestRemediesOutputSchema>;
@@ -31,18 +33,16 @@ export async function suggestRemedies(input: SuggestRemediesInput): Promise<Sugg
   return suggestRemediesFlow(input);
 }
 
-const PromptInputSchema = SuggestRemediesInputSchema.extend({
-  knowledgeBase: z.string().describe('The knowledge base of homeopathic remedies.'),
-});
-
 const prompt = ai.definePrompt({
   name: 'suggestRemediesPrompt',
-  input: {schema: PromptInputSchema},
+  input: {schema: SuggestRemediesInputSchema},
   output: {schema: SuggestRemediesOutputSchema},
-  prompt: `You are a knowledgeable homeopathic medicine advisor. You will use the provided Materia Medica text as your primary source of truth. The user will describe their symptoms in Bengali. You must analyze these symptoms and, based on the provided knowledge, provide a ranked list of potential homeopathic medicine suggestions. Both the medicine name and its description must be in Bengali.
+  prompt: `You are a knowledgeable homeopathic medicine advisor. The user will describe their symptoms in Bengali. You must analyze these symptoms and, based on your knowledge, provide a ranked list of potential homeopathic medicine suggestions. 
 
-Materia Medica:
-{{{knowledgeBase}}}
+For each suggestion, provide:
+1. The medicine name in Bengali.
+2. A brief description in Bengali explaining why it is a suitable choice.
+3. A similarity score from 1 to 100, where 100 indicates a perfect match.
 
 Symptoms: {{{symptoms}}}`,
 });
@@ -54,10 +54,7 @@ const suggestRemediesFlow = ai.defineFlow(
     outputSchema: SuggestRemediesOutputSchema,
   },
   async input => {
-    const knowledgeBasePath = path.join(process.cwd(), 'src', 'data', 'knowledge-base.txt');
-    const knowledgeBase = await readFile(knowledgeBasePath, 'utf-8');
-
-    const {output} = await prompt({...input, knowledgeBase});
+    const {output} = await prompt(input);
     return output!;
   }
 );

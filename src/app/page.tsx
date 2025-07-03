@@ -22,7 +22,7 @@ export default function Home() {
     setError(null);
     try {
       const result = await suggestRemedies({ symptoms: values.symptoms });
-      setRemedies(result.remedies);
+      setRemedies(result.remedies.sort((a, b) => b.score - a.score));
     } catch (e) {
       setError('সাজেশন আনতে একটি ত্রুটি ঘটেছে। অনুগ্রহ করে আপনার সংযোগ বা API কী পরীক্ষা করে আবার চেষ্টা করুন।');
       console.error(e);
@@ -33,65 +33,77 @@ export default function Home() {
 
   return (
     <>
-      <main className="flex-1">
-        <div className="container mx-auto px-4 py-8 md:py-16 max-w-3xl">
-          <header className="text-center mb-12">
-            <div className="inline-flex items-center justify-center bg-primary/10 text-primary p-3 rounded-full mb-4 ring-4 ring-primary/20">
-              <Leaf className="w-10 h-10" />
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold font-headline text-foreground mb-2">
-              Veridia
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              আপনার লক্ষণগুলি বর্ণনা করুন এবং আমাদের এআই সহকারীকে আপনার সুস্থতার জন্য সম্ভাব্য হোমিওপ্যাথিক প্রতিকারগুলির পরামর্শ দিন।
-            </p>
-          </header>
+      <div className="container mx-auto px-4 py-8 md:py-12 flex-1 flex flex-col">
+        <header className="text-center mb-10">
+          <div className="inline-flex items-center justify-center bg-primary/10 text-primary p-3 rounded-full mb-4">
+            <Leaf className="w-10 h-10" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold font-headline text-gray-800 tracking-tight mb-2">
+            MediKit
+          </h1>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          রোগীর লক্ষণসমূহের বিস্তারিত বিবরণ দিন এবং জেমিনি এআই-এর মাধ্যমে সম্ভাব্য প্রতিকারগুলো সম্পর্কে জানুন।
+          </p>
+        </header>
 
-          <section className="mb-12 bg-card p-6 md:p-8 rounded-xl shadow-sm border">
+        <main className="flex-1 grid lg:grid-cols-2 gap-8 items-start">
+          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 md:p-8 border border-gray-200">
             <SymptomForm onSubmit={handleSubmit} isLoading={isLoading} />
           </section>
 
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center p-8 text-center">
-                <LoaderCircle className="w-12 h-12 animate-spin text-primary mb-4" />
-                <p className="text-muted-foreground">আপনার জন্য প্রতিকার খোঁজা হচ্ছে...</p>
+          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 md:p-8 border border-gray-200 min-h-[500px]">
+            {isLoading && (
+              <div className="flex flex-col items-center justify-center text-center h-full">
+                  <LoaderCircle className="w-12 h-12 animate-spin text-primary mb-4" />
+                  <p className="text-muted-foreground">লক্ষণ বিশ্লেষণ করা হচ্ছে...</p>
+              </div>
+            )}
+
+            {error && (
+               <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
+                <Alert variant="destructive" className="w-full">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>ত্রুটি</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+               </div>
+            )}
+
+            {!isLoading && !error && remedies === null && (
+               <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
+                  <div className="text-5xl text-gray-300 mb-4">
+                      <Bot />
+                  </div>
+                  <p className="text-gray-500 text-center">বিশ্লেষণের ফলাফল এখানে প্রদর্শিত হবে।</p>
+                  <p className="text-gray-400 text-sm text-center mt-1">শুরু করতে রোগীর লক্ষণগুলি পূরণ করুন।</p>
             </div>
-          )}
+            )}
+            
+            {remedies && remedies.length > 0 && (
+              <RemediesList remedies={remedies} />
+            )}
+            
+            {remedies && remedies.length === 0 && !isLoading && !error && (
+                <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
+                  <Alert className="w-full">
+                    <Bot className="h-4 w-4" />
+                    <AlertTitle>কোনো সাজেশন পাওয়া যায়নি</AlertTitle>
+                    <AlertDescription>
+                        বর্ণিত লক্ষণগুলির জন্য আমরা কোনও নির্দিষ্ট প্রতিকার খুঁজে পাইনি। অনুগ্রহ করে বাক্যটি পুনর্গঠন করে বা আরও বিশদ বিবরণ যোগ করে আবার চেষ্টা করুন।
+                    </AlertDescription>
+                  </Alert>
+                </div>
+            )}
+          </section>
+        </main>
+      </div>
 
-          {error && (
-             <Alert variant="destructive">
-               <AlertTriangle className="h-4 w-4" />
-               <AlertTitle>ত্রুটি</AlertTitle>
-               <AlertDescription>{error}</AlertDescription>
-             </Alert>
-          )}
-
-          {remedies && remedies.length > 0 && (
-            <RemediesList remedies={remedies} />
-          )}
-          
-          {remedies && remedies.length === 0 && !isLoading && !error && (
-              <Alert>
-                <Bot className="h-4 w-4" />
-                <AlertTitle>কোনো সাজেশন পাওয়া যায়নি</AlertTitle>
-                <AlertDescription>
-                    বর্ণিত লক্ষণগুলির জন্য আমরা কোনও নির্দিষ্ট প্রতিকার খুঁজে পাইনি। অনুগ্রহ করে বাক্যটি পুনর্গঠন করে বা আরও বিশদ বিবরণ যোগ করে আবার চেষ্টা করুন।
-                </AlertDescription>
-              </Alert>
-          )}
-        </div>
-      </main>
-
-      <footer className="py-8 mt-auto bg-background/80 backdrop-blur-sm border-t">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <Alert variant="default" className="bg-card/50 mb-4">
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-            <AlertTitle className="font-bold">সতর্কবার্তা</AlertTitle>
-            <AlertDescription className="text-muted-foreground">
-              এই টুলটি শুধুমাত্র তথ্যের উদ্দেশ্যে তৈরি। চিকিৎসা সংক্রান্ত যেকোনো প্রয়োজনে সর্বদা একজন যোগ্য চিকিৎসকের পরামর্শ নিন।
-            </AlertDescription>
-          </Alert>
-          <p className="text-sm text-center text-muted-foreground">
+      <footer className="py-6 mt-auto bg-transparent">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <p className="text-sm text-center text-gray-500">
+            এই অ্যাপ্লিকেশনটি শুধুমাত্র তথ্যগত সহায়তার জন্য। যেকোনো ঔষধ গ্রহণের পূর্বে রেজিস্টার্ড চিকিৎসকের পরামর্শ নিন।
+          </p>
+          <p className="text-sm text-center text-muted-foreground mt-2">
             ডেভেলপ করেছেন ROY SHAON | © {new Date().getFullYear()} সর্বসত্ত্ব সংরক্ষিত।
           </p>
         </div>

@@ -1,36 +1,73 @@
 'use client';
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { type SuggestRemediesOutput } from '@/ai/flows/suggest-remedies';
-import { Pill } from 'lucide-react';
+import { Pill, FileText } from 'lucide-react';
 
 interface RemediesListProps {
     remedies: NonNullable<SuggestRemediesOutput>['remedies'];
 }
 
+const ScoreCircle: React.FC<{ score: number }> = ({ score }) => {
+  const circumference = 2 * Math.PI * 24; // 2 * pi * radius
+  const strokeDashoffset = circumference - (score / 100) * circumference;
+  
+  let colorClass = 'text-green-500';
+  if (score < 75) colorClass = 'text-yellow-500';
+  if (score < 50) colorClass = 'text-red-500';
+
+  return (
+    <div className="relative h-16 w-16 flex-shrink-0">
+      <svg className="h-full w-full" viewBox="0 0 52 52">
+        <circle
+          className="text-gray-200"
+          strokeWidth="4"
+          stroke="currentColor"
+          fill="transparent"
+          r="24"
+          cx="26"
+          cy="26"
+        />
+        <circle
+          className={`transform -rotate-90 origin-center transition-all duration-1000 ease-out ${colorClass}`}
+          strokeWidth="4"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          stroke="currentColor"
+          fill="transparent"
+          r="24"
+          cx="26"
+          cy="26"
+        />
+      </svg>
+      <span className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-lg ${colorClass}`}>
+        {score}
+      </span>
+    </div>
+  );
+};
+
+
 export function RemediesList({ remedies }: RemediesListProps) {
     return (
-        <section>
-            <h2 className="text-3xl font-bold font-headline text-center mb-8">এআই-চালিত পরামর্শ</h2>
-            <Accordion type="single" collapsible className="w-full space-y-3">
+        <div className="h-full">
+            <div className="flex items-center gap-3 mb-6">
+                <Pill className="w-6 h-6 text-primary" />
+                <h2 className="text-2xl font-bold text-foreground">সম্ভাব্য ঔষধসমূহ</h2>
+            </div>
+            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
             {remedies.map((remedy, index) => (
-                <AccordionItem value={`item-${index}`} key={index} className="bg-card border rounded-lg shadow-sm transition-shadow hover:shadow-md">
-                <AccordionTrigger className="text-lg font-semibold hover:no-underline p-4 md:p-6 text-left">
-                    <div className="flex items-center gap-4 w-full">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-accent/20 text-accent-foreground flex-shrink-0">
-                          <Pill className="w-5 h-5 text-accent" />
+                <div key={index} className="bg-white p-4 rounded-xl shadow-md border border-gray-200/80 transition-all hover:shadow-lg hover:border-cyan-200">
+                    <div className="flex items-center gap-4">
+                        <ScoreCircle score={remedy.score} />
+                        <div className="flex-1">
+                            <h3 className="text-xl font-bold text-gray-800">{remedy.name}</h3>
+                            <p className="mt-1 text-gray-600 text-base leading-relaxed">{remedy.description}</p>
                         </div>
-                        <span className="flex-1">{remedy.name}</span>
                     </div>
-                </AccordionTrigger>
-                <AccordionContent className="text-base text-muted-foreground px-4 pb-4 md:px-6 md:pb-6 pl-16">
-                    <div className="prose prose-sm max-w-none text-muted-foreground">
-                      <p className="whitespace-pre-wrap">{remedy.description}</p>
-                    </div>
-                </AccordionContent>
-                </AccordionItem>
+                </div>
             ))}
-            </Accordion>
-      </section>
+            </div>
+      </div>
     );
 }

@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview Suggests homeopathic medicines based on user-provided symptoms using a tool for retrieving medicine details.
+ * @fileOverview Suggests homeopathic medicines based on user-provided symptoms.
  *
  * - suggestHomeopathicMedicines - A function that takes symptom inputs and returns a ranked list of potential homeopathic medicine suggestions with details.
  * - SuggestHomeopathicMedicinesInput - The input type for the suggestHomeopathicMedicines function.
@@ -34,7 +34,7 @@ const prompt = ai.definePrompt({
   name: 'suggestHomeopathicMedicinesPrompt',
   input: {schema: SuggestHomeopathicMedicinesInputSchema},
   output: {schema: SuggestHomeopathicMedicinesOutputSchema},
-  prompt: `You are a knowledgeable homeopathic medicine advisor with deep knowledge of homeopathy. A user will describe their symptoms, and you will provide a ranked list of potential homeopathic medicine suggestions based on your knowledge. Provide a description for each medicine.
+  prompt: `You are a knowledgeable homeopathic medicine advisor. A user will describe their symptoms, and you will provide a ranked list of potential homeopathic medicine suggestions based on your knowledge. Provide a description for each medicine.
 
 Symptoms: {{{symptoms}}}`,
 });
