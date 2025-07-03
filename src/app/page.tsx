@@ -29,15 +29,18 @@ export default function Home() {
 
     try {
       const result = await suggestRemedies({ symptoms: values.symptoms });
-      const topIds = [
-        result.topRemedyFromMateriaMedica?.name, 
-        result.topRemedyFromBoericke?.name, 
-        result.topRemedyFromAI?.name
+
+      const topRemedyNames = [
+        result.topRemedyFromMateriaMedica?.name,
+        result.topRemedyFromBoericke?.name,
+        result.topRemedyFromAI?.name,
       ].filter(Boolean);
-      
-      const filteredRemedies = result.remedies.filter(r => !topIds.includes(r.name));
-      
-      setRemedies(filteredRemedies.sort((a, b) => b.score - a.score));
+
+      const otherRemedies = result.remedies.filter(
+        (remedy) => !topRemedyNames.includes(remedy.name)
+      );
+
+      setRemedies(otherRemedies.sort((a, b) => b.score - a.score));
       setTopRemedyFromMateriaMedica(result.topRemedyFromMateriaMedica);
       setTopRemedyFromBoericke(result.topRemedyFromBoericke);
       setTopRemedyFromAI(result.topRemedyFromAI);
