@@ -9,7 +9,6 @@ interface RemediesListProps {
 
 const ScoreCircle: React.FC<{ score: number }> = ({ score }) => {
   const circumference = 2 * Math.PI * 24; // 2 * pi * radius
-  const strokeDashoffset = circumference - (score / 100) * circumference;
   
   let colorClass = 'text-green-500';
   if (score < 75) colorClass = 'text-yellow-500';
@@ -52,7 +51,7 @@ export function RemediesList({ remedies }: RemediesListProps) {
     return (
         <div className="h-full">
             <div className="flex items-center gap-3 mb-6">
-                <Pill className="w-6 h-6 text-primary" />
+                <Pill className="w-5 h-5 md:w-6 md:h-6 text-primary" />
                 <h2 className="text-xl md:text-2xl font-bold text-foreground">অন্যান্য সম্ভাব্য ঔষধসমূহ</h2>
             </div>
             <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
@@ -64,15 +63,6 @@ export function RemediesList({ remedies }: RemediesListProps) {
                             <div>
                                 <h3 className="text-lg md:text-xl font-bold text-gray-800 flex items-center gap-2">
                                     <span>{remedy.name}</span>
-                                    {remedy.source === 'H' && (
-                                        <span className="flex items-center justify-center w-6 h-6 bg-green-100 text-green-800 rounded-full text-xs font-bold ring-2 ring-green-200" title="হ্যানিম্যানের Materia Medica থেকে">H</span>
-                                    )}
-                                    {remedy.source === 'B' && (
-                                        <span className="flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-800 rounded-full text-xs font-bold ring-2 ring-blue-200" title="বোরিকসের Materia Medica থেকে">B</span>
-                                    )}
-                                    {remedy.source === 'AI' && (
-                                        <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-bold ring-2 ring-purple-200" title="AI এর সাধারণ জ্ঞান থেকে">AI</span>
-                                    )}
                                 </h3>
                                 <p className="mt-1 text-sm md:text-base text-gray-600 leading-relaxed">{remedy.description}</p>
                             </div>

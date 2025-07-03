@@ -14,7 +14,6 @@ interface TopSuggestionsProps {
 
 const ScoreCircle: React.FC<{ score: number }> = ({ score }) => {
     const circumference = 2 * Math.PI * 16; // 2 * pi * radius
-    const strokeDashoffset = circumference - (score / 100) * circumference;
     
     let colorClass = 'text-green-500';
     if (score < 75) colorClass = 'text-yellow-500';
@@ -92,15 +91,6 @@ const SuggestionCard: React.FC<{ remedy: Remedy, type: 'materia-medica' | 'boeri
                         <div className="flex-1">
                             <h3 className="text-base md:text-lg font-bold text-gray-800 flex items-center gap-2">
                                 <span>{remedy.name}</span>
-                                {remedy.source === 'H' && (
-                                    <span className="flex items-center justify-center w-5 h-5 bg-green-100 text-green-800 rounded-full text-xs font-bold ring-1 ring-green-200" title="হ্যানিম্যানের Materia Medica থেকে">H</span>
-                                )}
-                                {remedy.source === 'B' && (
-                                    <span className="flex items-center justify-center w-5 h-5 bg-blue-100 text-blue-800 rounded-full text-xs font-bold ring-1 ring-blue-200" title="বোরিকসের Materia Medica থেকে">B</span>
-                                )}
-                                {remedy.source === 'AI' && (
-                                    <span className="px-1.5 py-0.5 bg-indigo-100 text-indigo-800 rounded-full text-xs font-bold ring-1 ring-indigo-200" title="AI এর সাধারণ জ্ঞান থেকে">AI</span>
-                                )}
                             </h3>
                             <p className="mt-1 text-gray-600 text-xs leading-relaxed">{remedy.description}</p>
                         </div>
