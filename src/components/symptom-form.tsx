@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FileText, LoaderCircle, Mic } from 'lucide-react';
+import { FileText, LoaderCircle, Mic, Wand2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
+import { punctuateText } from '@/ai/flows/punctuate-text';
 
 const formSchema = z.object({
   symptoms: z.string().min(10, {
@@ -47,6 +48,7 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
   });
 
   const [isListening, setIsListening] = useState(false);
+  const [isRearranging, setIsRearranging] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const textBeforeListening = useRef('');
 
@@ -140,6 +142,25 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
     }
   };
 
+  const handleRearrange = async () => {
+    const currentSymptoms = form.getValues('symptoms');
+    if (!currentSymptoms || currentSymptoms.trim().length < 10) {
+      return;
+    }
+
+    setIsRearranging(true);
+    try {
+      const result = await punctuateText({ text: currentSymptoms });
+      if (result && result.punctuatedText) {
+        form.setValue('symptoms', result.punctuatedText);
+      }
+    } catch (e) {
+      console.error('Error punctuating text:', e);
+    } finally {
+      setIsRearranging(false);
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
@@ -166,18 +187,17 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
                   />
                 </FormControl>
                 <p className="text-xs text-muted-foreground mt-2">
-                  ভয়েস টাইপিং করতে, মাইক আইকনে ক্লিক করে ধরে কথা বলুন। কীবোর্ড
-                  শর্টকাট: `Ctrl + Space`
+                  টিপস: ভয়েস টাইপিংয়ের জন্য মাইক আইকন (`Ctrl + Space`) ব্যবহার করুন। লেখা শেষে দাড়ি-কমা যোগ করতে ম্যাজিক ওয়ান্ড আইকনে ক্লিক করুন।
                 </p>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-2 md:gap-4">
             <Button
               type="submit"
               className="w-full text-base md:text-lg font-bold py-3 h-auto bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg hover:opacity-90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isLoading}
+              disabled={isLoading || isRearranging}
             >
               {isLoading ? (
                 <>
@@ -186,6 +206,20 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
                 </>
               ) : (
                 'বিশ্লেষণ করুন'
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-auto aspect-square p-2 shrink-0"
+              onClick={handleRearrange}
+              disabled={isLoading || isRearranging}
+              title="বাক্য সাজান"
+            >
+              {isRearranging ? (
+                <LoaderCircle className="w-5 h-5 md:w-6 md:h-6 animate-spin" />
+              ) : (
+                <Wand2 className="w-5 h-5 md:w-6 md:h-6" />
               )}
             </Button>
             <Button
@@ -201,7 +235,7 @@ export function SymptomForm({ onSubmit, isLoading }: SymptomFormProps) {
               onMouseUp={stopListening}
               onTouchStart={startListening}
               onTouchEnd={stopListening}
-              disabled={!recognitionRef.current}
+              disabled={!recognitionRef.current || isLoading || isRearranging}
               title="ভয়েস টাইপিং (Ctrl + Space)"
             >
               <Mic
