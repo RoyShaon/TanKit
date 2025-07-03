@@ -19,27 +19,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const prompt = `Based on the following symptoms in Bengali, analyze and suggest homeopathic remedies. Please:
+    const prompt = `Based on the following symptoms in Bengali, analyze and suggest homeopathic remedies from THREE different sources. Please:
 
 1. Categorize ALL the symptoms mentioned into mental, physical, and history categories
-2. Suggest appropriate homeopathic remedies
-3. Provide detailed explanation
+2. Suggest ONE top remedy from Hahnemann's Materia Medica
+3. Suggest ONE top remedy from Boericke's Materia Medica
+4. Provide ONE AI-analyzed remedy recommendation
+5. List additional potential remedies
 
 Patient Symptoms: ${symptoms}
 
 Please respond in JSON format with the following exact structure:
 {
   "topRemedyFromMateriaMedica": {
-    "name": "Remedy name",
-    "description": "Detailed description in Bengali",
+    "name": "Top remedy from Hahnemann's Materia Medica",
+    "description": "Detailed description in Bengali from Hahnemann's teachings",
     "potency": "Suggested potency",
-    "dosage": "Dosage instructions in Bengali"
+    "dosage": "Dosage instructions in Bengali",
+    "score": 90,
+    "justification": "Why this remedy matches based on Hahnemann's principles in Bengali"
+  },
+  "topRemedyFromBoericke": {
+    "name": "Top remedy from Boericke's Materia Medica",
+    "description": "Detailed description in Bengali from Boericke's Materia Medica",
+    "potency": "Suggested potency",
+    "dosage": "Dosage instructions in Bengali",
+    "score": 85,
+    "justification": "Why this remedy matches based on Boericke's observations in Bengali"
+  },
+  "topRemedyFromAI": {
+    "name": "AI-recommended remedy",
+    "description": "Detailed AI analysis and description in Bengali",
+    "potency": "Suggested potency",
+    "dosage": "Dosage instructions in Bengali",
+    "score": 88,
+    "justification": "AI reasoning for this recommendation in Bengali"
   },
   "remedies": [
     {
-      "name": "Remedy name",
+      "name": "Additional remedy name",
       "confidence": "percentage",
-      "reasoning": "Why this remedy matches in Bengali"
+      "reasoning": "Why this remedy matches in Bengali",
+      "score": 75
     }
   ],
   "categorizedSymptoms": {
@@ -49,7 +70,7 @@ Please respond in JSON format with the following exact structure:
   }
 }
 
-Important: Extract and categorize ALL symptoms mentioned in the input. Do not leave any symptoms uncategorized.`;
+IMPORTANT: You MUST provide all three top remedies (topRemedyFromMateriaMedica, topRemedyFromBoericke, topRemedyFromAI). Each should be different remedies with proper scores (80-95 range).`;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
@@ -96,15 +117,34 @@ Important: Extract and categorize ALL symptoms mentioned in the input. Do not le
       suggestions = {
         topRemedyFromMateriaMedica: {
           name: "Arsenicum Album",
-          description: "সাধারণ উদ্বেগ ও অস্থিরতার জন্য কার্যকর",
+          description: "হ্যানিম্যানের মতে উদ্বেগ ও অস্থিরতার জন্য ক��র্যকর",
           potency: "30C",
           dosage: "দিনে ৩ বার ৫ ফোঁটা",
+          score: 85,
+          justification: "হ্যানিম্যানের নীতি অনুযায়ী এই ঔষধটি উপযুক্ত",
+        },
+        topRemedyFromBoericke: {
+          name: "Pulsatilla",
+          description: "বোরিকসের মতে পরিবর্তনশীল লক্ষণের জন্য উপকারী",
+          potency: "200C",
+          dosage: "সপ্তাহে ১ বার ৩ ফোঁটা",
+          score: 80,
+          justification: "বোরিকসের পর্যবেক্ষণ অনুযায়ী এই ঔষধটি কার্যকর",
+        },
+        topRemedyFromAI: {
+          name: "Sulphur",
+          description: "AI বিশ্লেষণে ত্বকের সমস্যার জন্য উপযুক্ত",
+          potency: "200C",
+          dosage: "মাসে ১ বার ৫ ফোঁটা",
+          score: 88,
+          justification: "AI বিশ্লেষণে এই ঔষধটি সবচেয়ে উপযুক্ত",
         },
         remedies: [
           {
-            name: "Arsenicum Album",
-            confidence: "High",
-            reasoning: "উদ্বেগ ও অস্থিরতার জন্য উপযুক্ত",
+            name: "Nux Vomica",
+            confidence: "Medium",
+            reasoning: "সাধারণ পেটের সমস্যার জন্য উপযুক্ত",
+            score: 70,
           },
         ],
         categorizedSymptoms: {

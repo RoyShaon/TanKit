@@ -18,9 +18,25 @@ type SuggestRemediesOutput = {
     description: string;
     potency: string;
     dosage: string;
+    score?: number;
+    justification?: string;
   };
-  topRemedyFromBoericke?: any;
-  topRemedyFromAI?: any;
+  topRemedyFromBoericke?: {
+    name: string;
+    description: string;
+    potency: string;
+    dosage: string;
+    score?: number;
+    justification?: string;
+  };
+  topRemedyFromAI?: {
+    name: string;
+    description: string;
+    potency: string;
+    dosage: string;
+    score?: number;
+    justification?: string;
+  };
   categorizedSymptoms?: {
     mentalSymptoms: string;
     physicalSymptoms: string;
@@ -165,7 +181,7 @@ export default function Home() {
                   <Bot />
                 </div>
                 <p className="text-gray-500 text-center">
-                  বিশ্লেষণের ফলাফল এখানে প্রদর্শিত হবে।
+                  ��িশ্লেষণের ফলাফল এখানে প্রদর্শিত হবে।
                 </p>
                 <p className="text-gray-400 text-sm text-center mt-1">
                   শুরু করতে রোগীর লক্ষণগুলি পূরণ করুন।
@@ -201,7 +217,7 @@ export default function Home() {
                 <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
                   <Alert className="w-full">
                     <Bot className="h-4 w-4" />
-                    <AlertTitle>কোনো সাজেশন প���ওয়া যায়নি</AlertTitle>
+                    <AlertTitle>কোনো সাজেশন পাওয়া যায়নি</AlertTitle>
                     <AlertDescription>
                       বর্ণিত লক্ষণগুলির জন্য আমরা কোনও নির্দিষ্ট প্রতিকার খুঁজে
                       পাইনি। অনুগ্রহ করে বাক্যটি পুনর্গঠন করে বা আরও বিশদ বিবরণ
