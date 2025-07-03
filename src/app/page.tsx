@@ -4,14 +4,9 @@ import { useState } from 'react';
 import { Leaf, Bot, AlertTriangle, LoaderCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { suggestRemedies, type SuggestRemediesOutput } from '@/ai/flows/suggest-remedies';
-import { SymptomForm } from '@/components/symptom-form';
+import { SymptomForm, type SymptomFormValues } from '@/components/symptom-form';
 import { RemediesList } from '@/components/remedies-list';
 import { TopSuggestions } from '@/components/top-suggestions';
-
-
-interface SymptomFormValues {
-    symptoms: string;
-}
 
 export default function Home() {
   const [remedies, setRemedies] = useState<SuggestRemediesOutput['remedies'] | null>(null);
@@ -26,8 +21,15 @@ export default function Home() {
     setTopRemedyFromMateriaMedica(null);
     setTopRemedyFromAI(null);
     setError(null);
+
+    const formattedSymptoms = `
+      মানসিক লক্ষণ: ${values.mentalSymptoms || 'উল্লেখ করা হয়নি'}
+      শারীরিক লক্ষণ: ${values.physicalSymptoms}
+      পূর্ব ইতিহাস: ${values.history || 'উল্লেখ করা হয়নি'}
+    `.trim();
+
     try {
-      const result = await suggestRemedies({ symptoms: values.symptoms });
+      const result = await suggestRemedies({ symptoms: formattedSymptoms });
       // Filter out the top suggestions from the main list to avoid duplication in the UI
       const topIds = [result.topRemedyFromMateriaMedica?.name, result.topRemedyFromAI?.name].filter(Boolean);
       const filteredRemedies = result.remedies.filter(r => !topIds.includes(r.name));
